@@ -1,0 +1,3627 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Modern Dark Theme with Vibrant Accents */
+            --primary-color: #7B68EE;
+            /* Slate Blue - Primary accent */
+            --primary-light: #9D8DF1;
+            /* Lighter Slate Blue */
+            --primary-dark: #5A4FCF;
+            /* Darker Slate Blue */
+            --secondary-color: #FF6B6B;
+            /* Coral Red - Secondary accent */
+            --accent-color: #4ECDC4;
+            /* Turquoise - Tertiary accent */
+            --success-color: #6BCB77;
+            /* Mint Green - Success indicators */
+            --warning-color: #FFD166;
+            /* Amber - Warnings */
+            --error-color: #FF6B6B;
+            /* Coral Red - Errors */
+            --bg-main: #121212;
+            /* Deep Black - Main background */
+            --bg-panel: #1E1E24;
+            /* Dark Slate - Panel background */
+            --bg-user-bubble: #2D2D39;
+            /* Dark Purple-Gray - User chat bubble */
+            --bg-bot-bubble: #252530;
+            /* Dark Blue-Gray - Bot chat bubble */
+            --text-primary: #F5F5F5;
+            /* Off-White - Main text */
+            --text-secondary: #BDBDBD;
+            /* Light Gray - Secondary text */
+            --field-name: #4ECDC4;
+            /* Turquoise - Field names */
+            --field-value: #F5F5F5;
+            /* Off-White - Field values */
+            --highlight-primary: #7B68EE;
+            /* Slate Blue - Primary highlights */
+            --highlight-secondary: #FF6B6B;
+            /* Coral Red - Secondary highlights */
+            --divider-color: #2D2D39;
+            /* Dark Purple-Gray - Dividers */
+            --border-radius: 12px;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-main);
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            overflow: hidden;
+            /* Prevent scrollbars */
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            box-shadow: none;
+        }
+
+        .sidebar {
+            width: 30%;
+            min-width: 300px;
+            max-width: 400px;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--divider-color);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            overflow: hidden;
+            height: 100vh;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.3);
+            background-image: linear-gradient(to bottom, #2D3748, #1A202C);
+        }
+
+        .sidebar-collapsed {
+            width: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #5A4FCF, #7B68EE);
+            color: var(--text-primary);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--divider-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+        }
+
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--divider-color);
+            position: relative;
+            z-index: 1;
+            background-color: #2D3748;
+        }
+
+        .user-info-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .user-avatar {
+            margin-right: 15px;
+        }
+
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .avatar-initial {
+            text-transform: uppercase;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .user-status {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            margin-right: 5px;
+        }
+
+        .purchase-history {
+            overflow-y: auto;
+            padding: 0 20px 10px 20px;
+            color: var(--text-primary);
+            max-height: 40vh;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--bg-panel);
+            background-color: #2D3748;
+        }
+
+        .purchase-history::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .purchase-history::-webkit-scrollbar-track {
+            background: var(--bg-panel);
+        }
+
+        .purchase-history::-webkit-scrollbar-thumb {
+            background-color: var(--accent-color);
+            border-radius: 6px;
+            border: 2px solid var(--bg-panel);
+        }
+
+        .sidebar-info {
+            padding: 0 20px 20px 20px;
+            color: var(--text-primary);
+            background-color: #2D3748;
+        }
+
+        .purchase-history h3,
+        .sidebar-info h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+            font-size: 1.05rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .purchase-history h3 i {
+            margin-right: 8px;
+        }
+
+        .purchase-item {
+            background-color: var(--bg-panel);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .order-item {
+            background-color: #1A1A24;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            transition: var(--transition);
+            border: 1px solid #FF3B30;
+            box-shadow: 0 3px 10px rgba(255, 59, 48, 0.25);
+            position: relative;
+            overflow: hidden;
+            display: block;
+            z-index: 1;
+        }
+
+        /* CSS để hiển thị rõ các phần tử đơn hàng */
+        #order-list {
+            padding: 10px;
+            min-height: 50px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .order-item::before {
+            content: none !important;
+            display: none !important;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0 !important;
+            height: 0 !important;
+            background-color: transparent !important;
+            opacity: 0 !important;
+            transition: none !important;
+        }
+
+        /* Disable hover effects */
+        .order-item:hover::before {
+            width: 0 !important;
+            opacity: 0 !important;
+            display: none !important;
+        }
+
+        .purchase-item:hover,
+        .order-item:hover {
+            transform: none !important;
+            box-shadow: 0 3px 10px rgba(255, 59, 48, 0.25) !important;
+            border-color: #FF3B30 !important;
+        }
+
+        .purchase-item h4,
+        .order-item h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .purchase-detail,
+        .order-detail {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            padding: 8px;
+            border-bottom: 1px dashed var(--divider-color);
+            background-color: #1A1A24;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+            border-left: 3px solid #FF6B6B;
+        }
+
+        .order-detail:last-child {
+            border-bottom: none;
+        }
+
+        .product-name,
+        .product-variant,
+        .product-quantity,
+        .product-price,
+        .product-total {
+            margin-bottom: 3px;
+        }
+
+        .product-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .product-total {
+            font-weight: 500;
+            color: var(--accent-color);
+            margin-top: 5px;
+            border-top: 1px dashed var(--divider-color);
+            padding-top: 5px;
+        }
+
+        .btn-show-all {
+            background-color: var(--primary-light);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-show-all:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-show-all i {
+            margin-right: 5px;
+        }
+
+        .order-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+            margin-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--bg-panel);
+        }
+
+        .order-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .order-list::-webkit-scrollbar-track {
+            background: var(--bg-panel);
+        }
+
+        .order-list::-webkit-scrollbar-thumb {
+            background-color: var(--accent-color);
+            border-radius: 6px;
+            border: 2px solid var(--bg-panel);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 0;
+            background: linear-gradient(135deg, #1A1A24, #2A2A36);
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+
+        .order-header h4 {
+            margin: 0;
+            flex: 1;
+        }
+
+        .order-total {
+            font-weight: 500;
+            color: var(--accent-color);
+            margin-right: 10px;
+        }
+
+        .toggle-arrow {
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-arrow.active {
+            transform: rotate(180deg);
+        }
+
+        .order-details-container {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--divider-color);
+            display: none;
+        }
+
+        .no-history {
+            color: var(--text-secondary);
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+            background-color: var(--bg-panel);
+            border-radius: 8px;
+        }
+
+        .chat-container {
+            flex: 1;
+            width: 70%;
+            background-color: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .chat-header {
+            background-color: var(--bg-panel);
+            color: var(--text-primary);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--divider-color);
+        }
+
+        .chat-header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-header h1 i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: var(--bg-main);
+            background-image: radial-gradient(circle at 10% 20%, rgba(0, 255, 255, 0.05) 0%, rgba(255, 198, 255, 0.03) 90%);
+            height: calc(100vh - 140px);
+            /* Adjust based on header and input heights */
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 18px;
+            /* Tăng padding */
+            line-height: 1.5;
+            position: relative;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+            margin: 2px 0;
+            /* Thêm margin để tạo khoảng cách giữa các tin nhắn */
+        }
+
+        .message.collapsed {
+            max-height: 400px;
+            /* Giới hạn chiều cao ban đầu */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .message.collapsed::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(transparent, var(--bg-bot-bubble));
+            pointer-events: none;
+        }
+
+        .user-message.collapsed::after {
+            background: linear-gradient(transparent, var(--bg-user-bubble));
+        }
+
+        .show-more-btn {
+            background-color: transparent;
+            color: #a0a0a0;
+            border: none;
+            padding: 8px 15px;
+            margin-top: 5px;
+            margin-left: 60px;
+            /* Căn lề trái để căn chỉnh với tin nhắn */
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+            /* Căn chỉnh với tin nhắn */
+        }
+
+        .show-more-btn:hover {
+            color: #ffffff;
+        }
+
+        .show-more-btn .arrow {
+            display: inline-block;
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .show-more-btn .arrow.down {
+            transform: rotate(0deg);
+        }
+
+        .show-more-btn .arrow.up {
+            transform: rotate(180deg);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-3px);
+            }
+
+            60% {
+                transform: translateY(-1.5px);
+            }
+        }
+
+        .show-more-btn:hover .arrow.down {
+            animation: bounce 1s infinite;
+        }
+
+        .show-more-btn:hover .arrow.up {
+            animation: bounce 1s infinite reverse;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message-container {
+            display: flex;
+            align-items: flex-start;
+            align-self: flex-end;
+            margin-bottom: 15px;
+            max-width: 80%;
+            flex-direction: row-reverse;
+        }
+
+        .user-icon-message {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background-color: #8A2BE2;
+            /* Màu tím đậm hơn */
+            border: 3px solid #FF00FF;
+            /* Viền màu hồng nổi bật */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 10px;
+            box-shadow: 0 3px 10px rgba(138, 43, 226, 0.5);
+            font-size: 22px;
+            color: #FFFFFF;
+            /* Màu chữ trắng */
+            z-index: 2;
+            /* Đảm bảo icon nằm trên cùng */
+            position: relative;
+            right: -5px;
+            /* Đẩy icon vào trong khung tin nhắn một chút */
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: #6A3093;
+            /* Màu tím */
+            background-image: linear-gradient(135deg, #6A3093, #A044FF);
+            /* Gradient tím */
+            border-radius: 15px;
+            /* Bo tròn các góc giống bot message */
+            color: #FFFFFF;
+            border: 2px solid var(--primary-color);
+            /* Viền màu tím */
+            box-shadow: 0 2px 8px rgba(123, 104, 238, 0.2);
+            transition: all 0.2s ease;
+            display: inline-block;
+            max-width: fit-content;
+        }
+
+        .user-message:hover {
+            box-shadow: 0 4px 12px rgba(123, 104, 238, 0.5);
+            border-color: #9370DB;
+        }
+
+        .bot-message-container {
+            display: flex;
+            align-items: flex-start;
+            align-self: flex-start;
+            margin-bottom: 15px;
+            width: 80%;
+        }
+
+        .bot-icon {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            background-color: #2A7A7A;
+            /* Màu giống với nền box trả lời */
+            border: 2px solid #4ECDC4;
+            /* Viền màu xanh */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 20px;
+            color: #FFFFFF;
+            /* Màu chữ trắng */
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background-color: #2A7A7A;
+            /* Màu nền xanh */
+            background-image: linear-gradient(135deg, #2A7A7A, #3A8A8A);
+            /* Gradient xanh */
+            border-radius: 15px;
+            /* Bo tròn các góc */
+            border: 2px solid #4ECDC4;
+            /* Viền màu xanh */
+            color: #FFFFFF;
+            /* Màu chữ trắng để dễ đọc trên nền xanh */
+            box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+            position: relative;
+            flex-grow: 1;
+            transition: all 0.2s ease;
+        }
+
+        .bot-message:hover {
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.5);
+            border-color: #5FDDCF;
+            background-color: #2D8080;
+            /* Màu nền xanh đậm hơn khi hover */
+            background-image: linear-gradient(135deg, #2D8080, #3D9090);
+        }
+
+        .thinking-message {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background-color: var(--bg-panel);
+            border-top: 1px solid var(--divider-color);
+        }
+
+        .user-input-container {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            background-color: var(--bg-main);
+            border-radius: 25px;
+            padding-left: 10px;
+        }
+
+        .user-icon {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background-color: #6A3093;
+            /* Màu giống với nền box nhập */
+            border: 2px solid var(--primary-color);
+            /* Viền màu tím */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 18px;
+            color: #FFFFFF;
+            /* Màu chữ trắng */
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid var(--divider-color);
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-dark);
+            background-color: var(--bg-panel);
+        }
+
+        .chat-input input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .chat-input button {
+            background-color: #6A3093;
+            /* Màu tím */
+            background-image: linear-gradient(135deg, #6A3093, #A044FF);
+            /* Gradient tím */
+            color: #FFFFFF;
+            border: 2px solid var(--primary-color);
+            border-radius: 25px;
+            padding: 12px 22px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(123, 104, 238, 0.3);
+        }
+
+        .chat-input button i {
+            margin-left: 8px;
+            font-size: 0.9em;
+        }
+
+        .chat-input button:hover {
+            background-color: #7A40A3;
+            /* Màu tím đậm hơn khi hover */
+            background-image: linear-gradient(135deg, #7A40A3, #B054FF);
+            border-color: #9370DB;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(123, 104, 238, 0.5);
+        }
+
+        .chat-input button:active {
+            transform: translateY(0);
+        }
+
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background-color: var(--bg-panel);
+            border-radius: 18px;
+            padding: 12px 15px;
+            margin-top: 5px;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: typing 1s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+            margin-right: 0;
+        }
+
+        @keyframes typing {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-btn,
+        .logout-btn,
+        .toggle-sidebar-btn {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .auth-btn i,
+        .logout-btn i,
+        .toggle-sidebar-btn i {
+            margin-right: 5px;
+        }
+
+        .auth-btn:hover,
+        .logout-btn:hover,
+        .toggle-sidebar-btn:hover {
+            background-color: var(--primary-dark);
+            color: var(--text-primary);
+        }
+
+        .verify-btn {
+            background-color: var(--bg-panel);
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .verify-btn:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: var(--bg-main);
+        }
+
+        .error-message {
+            color: #dc3545;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .retry-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .retry-button i {
+            margin-right: 5px;
+        }
+
+        .retry-button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .rate-limit-message {
+            color: #856404;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .rate-limit-message i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+
+        .anonymous-badge {
+            background-color: var(--bg-panel);
+            color: var(--text-primary);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+            box-shadow: 0 2px 5px var(--divider-color);
+            border: 1px solid var(--divider-color);
+        }
+
+        .anonymous-badge i {
+            margin-right: 5px;
+            color: var(--text-secondary);
+        }
+
+        .verified-badge {
+            background-color: var(--bg-panel);
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+            box-shadow: 0 2px 5px var(--divider-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .verified-badge i {
+            margin-right: 5px;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--divider-color);
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px var(--divider-color);
+            color: var(--text-secondary);
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .action-btn:hover {
+            background-color: var(--bg-panel);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--divider-color);
+            color: var(--primary-color);
+        }
+
+        .clear-btn {
+            color: var(--text-secondary);
+            border-color: var(--divider-color);
+        }
+
+        .upload-btn {
+            color: var(--text-secondary);
+            border-color: var(--divider-color);
+        }
+
+        .verify-button {
+            background-color: var(--bg-panel);
+            color: var(--secondary-color) !important;
+            text-decoration: none !important;
+            border: 1px solid var(--secondary-color);
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            margin: 5px 0;
+            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.1);
+        }
+
+        .verify-button i {
+            margin-right: 8px;
+        }
+
+        .verify-button:hover {
+            background-color: var(--secondary-color);
+            color: var(--bg-main) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
+        }
+
+        .inline-verify-btn {
+            display: inline-block;
+            background-color: var(--bg-panel);
+            color: var(--secondary-color) !important;
+            text-decoration: none !important;
+            border: 1px solid var(--secondary-color);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 0 2px;
+        }
+
+        .inline-verify-btn:hover {
+            background-color: var(--secondary-color);
+            color: var(--bg-main) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px var(--divider-color);
+        }
+
+        /* Product display styles */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .grid-1-item {
+            grid-template-columns: 1fr;
+            max-width: 250px;
+        }
+
+        .grid-2-items {
+            grid-template-columns: repeat(2, 1fr);
+            max-width: 350px;
+        }
+
+        .product-image-container {
+            width: 100%;
+            height: 150px;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 3px 10px var(--divider-color);
+            transition: var(--transition);
+            background-color: var(--bg-panel);
+        }
+
+        .product-image-container:hover {
+            transform: scale(1.03);
+            box-shadow: 0 5px 15px var(--primary-dark);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-image:hover {
+            transform: scale(1.1);
+        }
+
+        .product-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 5px;
+            color: var(--text-primary);
+        }
+
+        .product-title {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        /* Image message styles */
+        .image-message {
+            max-width: 300px;
+        }
+
+        .image-container {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 3px 10px var(--divider-color);
+            background-color: var(--bg-panel);
+        }
+
+        .image-container img {
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .image-container img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+                height: 95vh;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 45vh;
+                min-width: unset;
+                max-width: unset;
+                border-right: none;
+                border-bottom: 1px solid var(--divider-color);
+            }
+
+            .chat-container {
+                width: 100%;
+                height: 55vh;
+            }
+
+            .sidebar-collapsed {
+                max-height: 0;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar for authenticated users -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-user-circle"></i> Thông tin khách hàng</h2>
+            </div>
+
+            <div class="user-profile">
+                <div class="user-info-container">
+                    <div class="user-avatar">
+                        {% if session.user_id and session.user_id != 'guest' and session.user_name %}
+                        <div class="avatar-circle" style="background-color: #673AB7;">
+                            <span class="avatar-initial">{{ session.user_name[0] | upper }}</span>
+                        </div>
+                        {% else %}
+                        <div class="avatar-circle" style="background-color: #607D8B;">
+                            <span class="avatar-initial">G</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">{{ session.user_name or 'Bạn đang ẩn danh' }}</div>
+                        <div class="user-status">
+                            <div class="status-indicator"
+                                style="background-color: {% if session.user_id and session.user_id != 'guest' %}#6200EA{% else %}var(--text-secondary){% endif %};">
+                            </div>
+                            <span>{% if session.user_id and session.user_id != 'guest' %}Đã xác minh{% else %}Chưa xác
+                                minh{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="purchase-history">
+                <h3 style="color: var(--accent-color);"><i class="fas fa-shopping-bag"></i> 2 đơn hàng gần nhất</h3>
+
+                {% if session.user_id and session.user_id != 'guest' %}
+                <div class="order-list" id="order-list">
+                    <!-- Đơn hàng sẽ được tải bằng JavaScript -->
+                    <div class="loading-orders" style="text-align: center; padding: 20px;">
+                        <div class="spinner"
+                            style="display: inline-block; width: 30px; height: 30px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #7B68EE; animation: spin 1s ease-in-out infinite;">
+                        </div>
+                        <p style="margin-top: 10px; color: #E0E0E0;">Đang tải thông tin đơn hàng...</p>
+                    </div>
+                </div>
+
+                <div class="show-all-orders" style="margin-top: 10px; text-align: center;">
+                    <button type="button" id="show-all-orders-btn" class="btn-show-all"
+                        style="background-color: var(--bg-panel); color: var(--secondary-color); border: 1px solid var(--secondary-color); border-radius: 5px; padding: 5px 10px; cursor: pointer; width: 100%;">
+                        <i class="fas fa-list"></i> Thông tin toàn bộ đơn hàng
+                    </button>
+                </div>
+                {% else %}
+                <div class="no-history">
+                    <p>Vui lòng <button id="verify-btn-sidebar" class="inline-verify-btn">xác minh danh tính</button> để
+                        xem lịch sử mua hàng.</p>
+                </div>
+                {% endif %}
+
+                <style>
+                    @keyframes spin {
+                        to {
+                            transform: rotate(360deg);
+                        }
+                    }
+                </style>
+
+            </div>
+
+            <div class="sidebar-info">
+                <h3 style="color: var(--secondary-color);"><i class="fas fa-info-circle"></i> Thông tin thêm</h3>
+                <h4 style="margin-bottom: 5px; color: var(--primary-color);">Tính năng</h4>
+                <ul style="font-size: 0.85em; padding-left: 20px; margin-top: 5px; color: var(--text-secondary);">
+                    <li>🔍 Tìm kiếm thông minh</li>
+                    <li>🧠 Trả lời theo ngữ cảnh</li>
+                    <li>📚 Tích hợp cơ sở dữ liệu sản phẩm</li>
+                    <li>👤 Đề xuất cá nhân hóa</li>
+                    <li>📸 Xác thực khuôn mặt</li>
+                </ul>
+                <h4 style="margin-bottom: 5px; margin-top: 15px; color: var(--accent-color);">Hướng dẫn sử dụng</h4>
+                <ol
+                    style="font-size: 0.85em; padding-left: 20px; margin-top: 5px; margin-bottom: 0; color: var(--text-secondary);">
+                    <li>Nhìn vào camera để xác thực</li>
+                    <li>Nhập câu hỏi của bạn</li>
+                    <li>Đợi phản hồi từ hệ thống</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Main chat container -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1>
+                    <i class="fas fa-robot"></i> Chatbot
+                    {% if not session.user_id or session.user_id == 'guest' %}
+                    <span class="anonymous-badge"><i class="fas fa-user-secret"></i> Ẩn danh</span>
+                    {% else %}
+                    <span class="verified-badge"><i class="fas fa-check-circle"></i> Đã xác minh</span>
+                    {% endif %}
+                </h1>
+
+                <div class="user-info">
+                    {% if session.user_id and session.user_id != 'guest' %}
+                    <button class="toggle-sidebar-btn" id="toggle-sidebar-btn">
+                        <i class="fas fa-bars"></i> Thông tin
+                    </button>
+                    <button class="logout-btn" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </button>
+                    {% else %}
+                    <div class="auth-buttons">
+                        <button id="verify-btn" class="auth-btn verify-btn">
+                            <i class="fas fa-user-check"></i> Xác minh danh tính
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="bot-message-container">
+                    <div class="bot-icon">
+                        🤖
+                    </div>
+                    <div class="message bot-message">
+                        {% if not session.user_id or session.user_id == 'guest' %}
+                        <strong>👋 Xin chào!</strong> Tôi là trợ lý ảo của Coffee Shop. Bạn đang sử dụng chế độ ẩn danh.
+                        <br><br>
+                        Để nhận được đề xuất sản phẩm chính xác hơn và ưu đãi cá nhân hóa dựa trên lịch sử mua hàng, bạn
+                        có thể xác minh danh tính bất cứ lúc nào.
+                        <br><br>
+                        <button id="verify-btn-welcome" class="verify-button">
+                            <i class="fas fa-user-check"></i> Xác minh danh tính ngay
+                        </button>
+                        <br><br>
+                        Bạn có thể hỏi tôi về các sản phẩm, dịch vụ hoặc thông tin khác về cửa hàng.
+                        {% else %}
+                        <strong>✅ Xác minh thành công!</strong>
+                        <br>
+                        Xin chào <strong>{{ session.user_name }}</strong>! Tôi là trợ lý ảo của Coffee Shop. Tôi đã sẵn
+                        sàng hỗ trợ bạn.
+                        <br><br>
+                        Bạn có thể hỏi tôi về sản phẩm, dịch vụ, hoặc ưu đãi đặc biệt dành riêng cho bạn. Tôi cũng có
+                        thể đề xuất sản phẩm dựa trên lịch sử mua hàng của bạn.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="chat-input">
+                <div class="user-input-container">
+                    <div class="user-icon">
+                        👤
+                    </div>
+                    <input type="text" id="user-input" placeholder="Nhập tin nhắn của bạn..." autocomplete="off">
+                </div>
+                <button id="send-btn">Gửi <i class="fas fa-paper-plane"></i></button>
+            </div>
+
+            <div class="chat-actions">
+                <button class="action-btn upload-btn" id="upload-btn">
+                    <i class="fas fa-image"></i> Tải ảnh lên
+                </button>
+                <button class="action-btn clear-btn" id="clear-btn">
+                    <i class="fas fa-trash"></i> Xóa lịch sử
+                </button>
+                <button class="action-btn test-btn" id="test-btn" style="background-color: #ff9800; color: white;">
+                    <i class="fas fa-vial"></i> Kiểm tra kết nối
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hàm định dạng ngày tháng từ ISO format (YYYY-MM-DDThh:mm:ss) sang DD/MM/YYYY
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+
+            try {
+                // Xử lý chuỗi ngày tháng
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString; // Trả về chuỗi gốc nếu không phải ngày hợp lệ
+
+                // Định dạng ngày tháng theo DD/MM/YYYY
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear();
+
+                return `${day}/${month}/${year}`;
+            } catch (e) {
+                console.error('Lỗi khi định dạng ngày tháng:', e);
+                return dateString; // Trả về chuỗi gốc nếu có lỗi
+            }
+        }
+
+        // Hàm để hiển thị/ẩn chi tiết đơn hàng
+        function toggleOrderDetails(orderItem) {
+            console.log("toggleOrderDetails called for order item:", orderItem);
+
+            // Tìm container chi tiết đơn hàng
+            const detailsContainer = orderItem.querySelector('.order-details-container');
+            console.log("Found details container:", detailsContainer);
+
+            if (!detailsContainer) {
+                console.error("Could not find details container");
+                return;
+            }
+
+            // Tìm nút mũi tên
+            const arrowButton = orderItem.querySelector('.toggle-arrow-btn');
+            console.log("Found arrow button:", arrowButton);
+
+            // Kiểm tra trạng thái hiển thị hiện tại
+            const isHidden = detailsContainer.style.display === 'none' || !detailsContainer.style.display || window.getComputedStyle(detailsContainer).display === 'none';
+            console.log("Is hidden:", isHidden);
+
+            if (isHidden) {
+                // Hiển thị chi tiết đơn hàng
+                detailsContainer.style.display = 'block';
+                if (arrowButton) {
+                    arrowButton.innerHTML = '▲';
+                }
+
+                // Kiểm tra xem có chi tiết đơn hàng không
+                const orderDetails = detailsContainer.querySelectorAll('.order-detail');
+                console.log("Order details count:", orderDetails.length);
+
+                // Nếu không có chi tiết đơn hàng, hiển thị thông báo
+                if (orderDetails.length === 0 || (orderDetails.length === 1 && orderDetails[0].querySelector('.product-info') && orderDetails[0].querySelector('.product-info').textContent.includes('Không có thông tin'))) {
+                    console.log("No order details found, creating from order data");
+
+                    // Lấy ID của đơn hàng
+                    const orderId = orderItem.getAttribute('data-order-id');
+                    console.log("Order ID:", orderId);
+
+                    // Tìm đơn hàng trong dữ liệu
+                    const order = window.recentOrders.find(o => o.id == orderId);
+                    console.log("Found order:", order);
+
+                    if (order && order.items && order.items.length > 0) {
+                        // Xóa thông báo "Không có thông tin chi tiết sản phẩm"
+                        detailsContainer.innerHTML = '';
+
+                        // Thêm chi tiết đơn hàng
+                        order.items.forEach(item => {
+                            const orderDetail = document.createElement('div');
+                            orderDetail.className = 'order-detail';
+                            orderDetail.style.backgroundColor = '#1A1A1A';
+                            orderDetail.style.borderRadius = '4px';
+                            orderDetail.style.padding = '10px';
+                            orderDetail.style.marginBottom = '8px';
+                            orderDetail.style.borderTop = '1px dashed #333';
+
+                            let detailHTML = '';
+
+                            if (item.product_name) {
+                                detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Sản phẩm:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.product_name}</span></div>`;
+                            }
+
+                            if (item.variant_name) {
+                                detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Loại:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.variant_name}</span></div>`;
+                            } else if (item.variant_id) {
+                                detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Variant ID:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.variant_id}</span></div>`;
+                            }
+
+                            detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Số lượng:</span> <span style="color: #E0E0E0;">${item.quantity}</span></div>`;
+
+                            if (item.price != null) {
+                                detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Giá:</span> <span style="color: #E0E0E0;">${parseInt(item.price).toLocaleString('vi-VN')} VND</span></div>`;
+
+                                if (item.quantity != null) {
+                                    const subtotal = item.price * item.quantity;
+                                    detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Thành tiền:</span> <span style="color: #E0E0E0;">${parseInt(subtotal).toLocaleString('vi-VN')} VND</span></div>`;
+                                }
+                            }
+
+                            if (item.rate != null) {
+                                detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Đánh giá:</span> <span style="color: #E0E0E0;">${item.rate} ⭐</span></div>`;
+                            }
+
+                            orderDetail.innerHTML = detailHTML;
+                            detailsContainer.appendChild(orderDetail);
+                        });
+                    }
+                }
+
+                console.log("Showing order details");
+            } else {
+                // Ẩn chi tiết đơn hàng
+                detailsContainer.style.display = 'none';
+                if (arrowButton) {
+                    arrowButton.innerHTML = '▼';
+                }
+                console.log("Hiding order details");
+            }
+        }
+
+        // Hàm để hiển thị tất cả đơn hàng
+        function showAllOrders() {
+            console.log("showAllOrders called");
+
+            // Sử dụng dữ liệu đơn hàng từ biến toàn cục
+            const orderHistory = window.allOrders || [];
+            console.log("Order history for modal:", orderHistory);
+
+            // Tạo modal hiển thị tất cả đơn hàng
+            const modalOverlay = document.createElement('div');
+            modalOverlay.style.position = 'fixed';
+            modalOverlay.style.top = '0';
+            modalOverlay.style.left = '0';
+            modalOverlay.style.width = '100%';
+            modalOverlay.style.height = '100%';
+            modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            modalOverlay.style.zIndex = '1000';
+            modalOverlay.style.display = 'flex';
+            modalOverlay.style.justifyContent = 'center';
+            modalOverlay.style.alignItems = 'center';
+
+            const modalContent = document.createElement('div');
+            modalContent.style.backgroundColor = '#121212';
+            modalContent.style.color = '#E0E0E0';
+            modalContent.style.borderRadius = '10px';
+            modalContent.style.padding = '20px';
+            modalContent.style.width = '80%';
+            modalContent.style.maxWidth = '800px';
+            modalContent.style.maxHeight = '80vh';
+            modalContent.style.overflowY = 'auto';
+            modalContent.style.position = 'relative';
+            modalContent.style.boxShadow = '0 0 20px rgba(123, 104, 238, 0.4)';
+
+            // Thêm nút đóng
+            const closeButton = document.createElement('button');
+            closeButton.innerHTML = '&times;';
+            closeButton.style.position = 'absolute';
+            closeButton.style.top = '10px';
+            closeButton.style.right = '10px';
+            closeButton.style.backgroundColor = 'transparent';
+            closeButton.style.border = 'none';
+            closeButton.style.color = '#E0E0E0';
+            closeButton.style.fontSize = '24px';
+            closeButton.style.cursor = 'pointer';
+            closeButton.onclick = function () {
+                document.body.removeChild(modalOverlay);
+            };
+
+            // Thêm tiêu đề
+            const title = document.createElement('h2');
+            title.textContent = 'Lịch sử đơn hàng';
+            title.style.color = '#4ECDC4';
+            title.style.marginBottom = '20px';
+            title.style.borderBottom = '1px solid #333';
+            title.style.paddingBottom = '10px';
+
+            modalContent.appendChild(closeButton);
+            modalContent.appendChild(title);
+
+            // Sử dụng biến orderHistory đã khai báo ở trên
+            console.log("Order history:", orderHistory);
+
+            if (orderHistory.length > 0) {
+                // Tạo danh sách đơn hàng
+                orderHistory.forEach((order, index) => {
+                    const orderItem = document.createElement('div');
+                    orderItem.className = 'order-item';
+                    orderItem.style.backgroundColor = '#1A1A24';
+                    orderItem.style.borderRadius = '8px';
+                    orderItem.style.padding = '15px';
+                    orderItem.style.marginBottom = '15px';
+                    orderItem.style.border = '1px solid #FF3B30';
+                    orderItem.style.boxShadow = '0 3px 10px rgba(255, 59, 48, 0.25)';
+
+                    // Tạo header đơn hàng
+                    const orderHeader = document.createElement('div');
+                    orderHeader.style.display = 'flex';
+                    orderHeader.style.justifyContent = 'space-between';
+                    orderHeader.style.alignItems = 'center';
+                    orderHeader.style.cursor = 'pointer';
+                    orderHeader.style.padding = '5px 0';
+
+                    // Thêm thông tin đơn hàng
+                    const orderInfo = document.createElement('div');
+                    orderInfo.innerHTML = `
+                        <div style="margin-bottom: 5px;">
+                            <span style="color: #FF3B30; font-weight: bold; font-size: 1.1em;">Đơn ${index + 1}:</span>
+                        </div>
+                        <div style="margin-bottom: 5px;">
+                            <span style="color: #00FFFF; font-weight: bold; font-size: 0.9em;">Ngày đặt: </span>
+                            <span style="color: #E0E0E0; font-weight: bold; font-size: 0.9em;">${(order.date || order.order_date || '').split('T')[0] || 'N/A'}</span>
+                        </div>
+                    `;
+
+                    // Thêm nút mũi tên
+                    const toggleButton = document.createElement('button');
+                    toggleButton.className = 'toggle-arrow-btn';
+                    toggleButton.textContent = '▼';
+                    toggleButton.style.backgroundColor = 'transparent';
+                    toggleButton.style.border = 'none';
+                    toggleButton.style.color = '#E0E0E0';
+                    toggleButton.style.fontSize = '16px';
+                    toggleButton.style.cursor = 'pointer';
+
+                    orderHeader.appendChild(orderInfo);
+                    orderHeader.appendChild(toggleButton);
+                    orderItem.appendChild(orderHeader);
+
+                    // Tạo container chi tiết đơn hàng
+                    const detailsContainer = document.createElement('div');
+                    detailsContainer.className = 'order-details-container';
+                    detailsContainer.style.display = 'none';
+                    detailsContainer.style.backgroundColor = '#121212';
+                    detailsContainer.style.borderRadius = '4px';
+                    detailsContainer.style.padding = '10px';
+                    detailsContainer.style.marginTop = '10px';
+                    detailsContainer.style.borderTop = '1px dashed #333';
+
+                    // Thêm chi tiết đơn hàng
+                    if (order.items && Array.isArray(order.items)) {
+                        order.items.forEach(item => {
+                            const orderDetail = document.createElement('div');
+                            orderDetail.className = 'order-detail';
+                            orderDetail.style.backgroundColor = '#1A1A1A';
+                            orderDetail.style.borderRadius = '4px';
+                            orderDetail.style.padding = '10px';
+                            orderDetail.style.marginBottom = '8px';
+                            orderDetail.style.borderTop = '1px dashed #333';
+
+                            orderDetail.innerHTML = `
+                                ${item.product_name ? `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Sản phẩm:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.product_name}</span></div>` : ''}
+                                ${item.variant_name ? `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Loại:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.variant_name}</span></div>` :
+                                    item.variant_id ? `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Variant ID:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.variant_id}</span></div>` : ''}
+                                <div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Số lượng:</span> <span style="color: #E0E0E0;">${item.quantity}</span></div>
+                                ${item.price != null ? `
+                                <div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Giá:</span> <span style="color: #E0E0E0;">${parseInt(item.price).toString().replace(',', '.')} VND</span></div>
+                                ${item.quantity != null ? `
+                                <div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Thành tiền:</span> <span style="color: #E0E0E0;">${parseInt(item.price * item.quantity).toString().replace(',', '.')} VND</span></div>
+                                ` : ''}
+                                ` : ''}
+                                <div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Đánh giá:</span> <span style="color: #E0E0E0;">${item.rate} ⭐</span></div>
+                            `;
+
+                            detailsContainer.appendChild(orderDetail);
+                        });
+                    } else {
+                        const noDetails = document.createElement('div');
+                        noDetails.className = 'order-detail';
+                        noDetails.style.backgroundColor = '#1A1A1A';
+                        noDetails.style.borderRadius = '4px';
+                        noDetails.style.padding = '10px';
+                        noDetails.style.textAlign = 'center';
+                        noDetails.innerHTML = '<div style="color: #E0E0E0; font-style: italic;">Không có thông tin chi tiết sản phẩm</div>';
+                        detailsContainer.appendChild(noDetails);
+                    }
+
+                    orderItem.appendChild(detailsContainer);
+                    modalContent.appendChild(orderItem);
+
+                    // Thêm event listener cho nút toggle
+                    toggleButton.addEventListener('click', function () {
+                        if (detailsContainer.style.display === 'none' || !detailsContainer.style.display || window.getComputedStyle(detailsContainer).display === 'none') {
+                            detailsContainer.style.display = 'block';
+                            toggleButton.textContent = '▲';
+                        } else {
+                            detailsContainer.style.display = 'none';
+                            toggleButton.textContent = '▼';
+                        }
+                    });
+
+                    // Thêm event listener cho header
+                    orderHeader.addEventListener('click', function (event) {
+                        if (!event.target.classList.contains('toggle-arrow-btn')) {
+                            toggleButton.click();
+                        }
+                    });
+                });
+            } else {
+                const noOrders = document.createElement('div');
+                noOrders.style.textAlign = 'center';
+                noOrders.style.padding = '20px';
+                noOrders.style.color = '#E0E0E0';
+                noOrders.textContent = 'Không có lịch sử đơn hàng.';
+                modalContent.appendChild(noOrders);
+            }
+
+            modalOverlay.appendChild(modalContent);
+            document.body.appendChild(modalOverlay);
+        }
+
+        // Hàm để khởi tạo các đơn hàng trong sidebar
+        function initializeSidebarOrders() {
+            console.log("Initializing sidebar orders");
+
+            // Lấy tất cả các đơn hàng trong sidebar
+            const sidebarOrders = document.querySelectorAll('.purchase-history .order-item');
+            console.log("Found sidebar orders:", sidebarOrders.length);
+
+            // Xử lý từng đơn hàng
+            sidebarOrders.forEach(function (orderItem, index) {
+                console.log("Setting up sidebar order:", index + 1);
+
+                // Lấy các phần tử cần thiết
+                const orderHeader = orderItem.querySelector('.order-header');
+                const orderHeaderContent = orderItem.querySelector('.order-header-content');
+                const toggleButton = orderItem.querySelector('.toggle-arrow-btn');
+                const detailsContainer = orderItem.querySelector('.order-details-container');
+
+                // Đảm bảo container chi tiết đơn hàng được ẩn ban đầu
+                if (detailsContainer) {
+                    detailsContainer.style.display = 'none';
+                }
+
+                // Thêm event listener cho nút toggle arrow
+                if (toggleButton) {
+                    toggleButton.addEventListener('click', function (event) {
+                        console.log("Toggle button clicked for sidebar order:", index + 1);
+                        event.preventDefault();
+                        event.stopPropagation();
+                        toggleOrderDetails(orderItem);
+                    });
+                }
+
+                // Thêm event listener cho header đơn hàng
+                if (orderHeader) {
+                    orderHeader.addEventListener('click', function (event) {
+                        console.log("Order header clicked for sidebar order:", index + 1);
+                        if (!event.target.classList.contains('toggle-arrow-btn')) {
+                            toggleOrderDetails(orderItem);
+                        }
+                    });
+                }
+
+                // Thêm event listener cho header content đơn hàng
+                if (orderHeaderContent) {
+                    orderHeaderContent.addEventListener('click', function (event) {
+                        console.log("Order header content clicked for sidebar order:", index + 1);
+                        if (!event.target.classList.contains('toggle-arrow-btn')) {
+                            toggleOrderDetails(orderItem);
+                        }
+                    });
+                }
+            });
+
+            // Thêm console.log để kiểm tra xem hàm đã được gọi chưa
+            console.log("Sidebar orders initialized");
+        }
+
+        // Biến toàn cục để lưu trữ dữ liệu đơn hàng
+        window.recentOrders = [];
+        window.allOrders = [];
+
+        // Hàm định dạng tiền tệ
+        function formatCurrency(amount) {
+            if (amount === null || amount === undefined) return '0';
+            return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // Hàm để hiển thị/ẩn chi tiết đơn hàng
+        function toggleOrderDetails(orderItem) {
+            console.log("Toggling order details");
+
+            const detailsContainer = orderItem.querySelector('.order-details-container');
+            const toggleButton = orderItem.querySelector('.toggle-arrow-btn');
+
+            if (!detailsContainer || !toggleButton) {
+                console.error("Missing details container or toggle button");
+                return;
+            }
+
+            const isHidden = detailsContainer.style.display === 'none' || !detailsContainer.style.display;
+
+            if (isHidden) {
+                detailsContainer.style.display = 'block';
+                toggleButton.textContent = '▲';
+
+                // Nếu đang hiển thị và chưa có nội dung, tải chi tiết đơn hàng
+                if (detailsContainer.children.length === 0) {
+                    const orderId = orderItem.getAttribute('data-order-id');
+                    console.log("Loading details for order ID:", orderId);
+
+                    // Tìm đơn hàng trong dữ liệu toàn cục
+                    const order = window.recentOrders.find(o => o.id == orderId) ||
+                        window.allOrders.find(o => o.id == orderId);
+
+                    if (order) {
+                        loadOrderDetails(order, detailsContainer);
+                    } else {
+                        console.error("Order not found:", orderId);
+                        detailsContainer.innerHTML = '<div style="text-align: center; padding: 10px; color: #E0E0E0; font-style: italic;">Không tìm thấy thông tin đơn hàng</div>';
+                    }
+                }
+
+                console.log("Showing order details");
+            } else {
+                detailsContainer.style.display = 'none';
+                toggleButton.textContent = '▼';
+                console.log("Hiding order details");
+            }
+        }
+
+        // Hàm để lấy dữ liệu đơn hàng từ API
+        async function fetchOrderData() {
+            try {
+                console.log('Fetching order data from API');
+                console.log('API URL: /api/customer-orders');
+                console.log('User ID: {{ session.user_id }}');
+
+                // Thêm timestamp để tránh cache
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/api/customer-orders?_=${timestamp}`);
+                console.log('API response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Order data:', data);
+
+                if (data.success) {
+                    // Lưu dữ liệu vào biến toàn cục
+                    window.recentOrders = data.data.recent_orders || [];
+                    window.allOrders = data.data.all_orders || [];
+
+                    console.log('Recent orders:', window.recentOrders);
+                    console.log('All orders:', window.allOrders);
+
+                    // Gọi renderOrderHistory ngay sau khi có dữ liệu
+                    console.log('Calling renderOrderHistory immediately after fetching data');
+                    renderOrderHistory(window.recentOrders);
+
+                    // Gọi initializeSidebarOrders sau khi render xong
+                    console.log('Calling initializeSidebarOrders after rendering');
+                    initializeSidebarOrders();
+
+                    return data; // Trả về dữ liệu để Promise có thể tiếp tục
+                } else {
+                    throw new Error(data.error || 'Failed to fetch order data');
+                }
+            } catch (error) {
+                console.error('Error fetching order data:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack
+                });
+                showOrderError();
+                throw error; // Ném lỗi để Promise.catch có thể bắt được
+            }
+        }
+
+        // Hàm để hiển thị lỗi khi không thể lấy dữ liệu đơn hàng
+        function showOrderError() {
+            const orderList = document.getElementById('order-list');
+            if (orderList) {
+                orderList.innerHTML = `
+                    <div class="no-history">
+                        <p>Đã xảy ra lỗi khi tải thông tin đơn hàng. <button onclick="fetchOrderData()" style="background: none; border: none; color: #7B68EE; text-decoration: underline; cursor: pointer;">Thử lại</button></p>
+                    </div>
+                `;
+            }
+        }
+
+        // Hàm để thêm sự kiện cho các đơn hàng
+        function setupOrderEventListeners() {
+            console.log('Setting up order event listeners');
+
+            // Thêm event listener cho tất cả các đơn hàng trong sidebar
+            document.querySelectorAll('.purchase-history .order-item').forEach(function (orderItem) {
+                console.log('Adding event listener to order item:', orderItem.id);
+
+                // Thêm event listener cho nút toggle arrow
+                const toggleButton = orderItem.querySelector('.toggle-arrow-btn');
+                if (toggleButton) {
+                    toggleButton.addEventListener('click', function (event) {
+                        console.log("Toggle button clicked for order:", orderItem.id);
+                        event.preventDefault();
+                        event.stopPropagation();
+                        toggleOrderDetails(orderItem);
+                    });
+                }
+
+                // Thêm event listener cho header đơn hàng
+                const orderHeader = orderItem.querySelector('.order-header');
+                if (orderHeader) {
+                    orderHeader.addEventListener('click', function (event) {
+                        console.log("Order header clicked for order:", orderItem.id);
+                        if (!event.target.classList.contains('toggle-arrow-btn')) {
+                            toggleOrderDetails(orderItem);
+                        }
+                    });
+                }
+            });
+
+            console.log('Order event listeners setup complete');
+        }
+
+        // Hàm để hiển thị/ẩn chi tiết đơn hàng
+        function toggleOrderDetails(orderItem) {
+            console.log("Toggling order details");
+
+            const detailsContainer = orderItem.querySelector('.order-details-container');
+            const toggleButton = orderItem.querySelector('.toggle-arrow-btn');
+
+            if (!detailsContainer || !toggleButton) {
+                console.error("Missing details container or toggle button");
+                return;
+            }
+
+            const isHidden = detailsContainer.style.display === 'none' || !detailsContainer.style.display;
+
+            if (isHidden) {
+                detailsContainer.style.display = 'block';
+                toggleButton.textContent = '▲';
+
+                // Nếu đang hiển thị và chưa có nội dung, tải chi tiết đơn hàng
+                if (detailsContainer.children.length === 0) {
+                    const orderId = orderItem.getAttribute('data-order-id');
+                    console.log("Loading details for order ID:", orderId);
+
+                    // Tìm đơn hàng trong dữ liệu toàn cục
+                    const order = window.recentOrders.find(o => o.id == orderId) ||
+                        window.allOrders.find(o => o.id == orderId);
+
+                    if (order) {
+                        loadOrderDetails(order, detailsContainer);
+                    } else {
+                        console.error("Order not found:", orderId);
+                        detailsContainer.innerHTML = '<div style="text-align: center; padding: 10px; color: #E0E0E0; font-style: italic;">Không tìm thấy thông tin đơn hàng</div>';
+                    }
+                }
+
+                console.log("Showing order details");
+            } else {
+                detailsContainer.style.display = 'none';
+                toggleButton.textContent = '▼';
+                console.log("Hiding order details");
+            }
+        }
+
+        // Hàm để hiển thị đơn hàng trong sidebar
+        function renderOrderHistory(orders) {
+            console.log("Rendering order history", orders);
+            const orderListContainer = document.getElementById('order-list');
+
+            if (!orderListContainer) {
+                console.error("Order list container not found");
+                return;
+            }
+
+            // Xóa nội dung hiện tại
+            orderListContainer.innerHTML = '';
+
+            if (!orders || orders.length === 0) {
+                console.log("No orders to display");
+                orderListContainer.innerHTML = '<div class="no-history"><p>Chưa có lịch sử mua hàng.</p></div>';
+                return;
+            }
+
+            console.log(`Rendering ${orders.length} orders`);
+
+            // Hiển thị từng đơn hàng
+            orders.forEach((order, index) => {
+                console.log(`Processing order ${index + 1}:`, order);
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+                orderItem.id = `order-${index + 1}`;
+                orderItem.setAttribute('data-order-id', order.id);
+
+                // Tính tổng tiền đơn hàng
+                let totalPrice = 0;
+                if (order.items && Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                        const price = parseFloat(item.price) || 0;
+                        const quantity = parseInt(item.quantity) || 0;
+                        totalPrice += price * quantity;
+                    });
+                }
+
+                // Tạo HTML cho đơn hàng
+                orderItem.innerHTML = `
+                    <div class="order-header" style="position: relative; cursor: pointer;">
+                        <div class="order-header-content" style="width: 100%; background-color: #1A1A1A; border-radius: 4px; padding: 12px; margin-bottom: 5px; position: relative;">
+                            <div style="margin-bottom: 5px; padding-right: 30px;">
+                                <span style="color: #FF3B30; font-weight: bold; font-size: 1.1em;">Đơn ${index + 1}:</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; padding-right: 30px;">
+                                <div style="margin-bottom: 5px;">
+                                    <span style="color: #00FFFF; font-weight: bold; font-size: 0.9em;">Ngày đặt: </span>
+                                    <span style="color: #E0E0E0; font-weight: bold; font-size: 0.9em;">${(order.date || order.order_date || '').split('T')[0] || 'N/A'}</span>
+                                </div>
+                                <div class="order-total">
+                                    <span style="color: #00FFFF; font-weight: bold; font-size: 0.9em;">Số sản phẩm: </span>
+                                    <span style="color: #E0E0E0; font-weight: bold; font-size: 0.9em; word-break: break-word;">${order.items ? order.items.length : 0}</span>
+                                </div>
+                                <div class="order-total-price" style="margin-top: 5px;">
+                                    <span style="color: #00FFFF; font-weight: bold; font-size: 0.9em;">Tổng tiền: </span>
+                                    <span style="color: #E0E0E0; font-weight: bold; font-size: 0.9em;">${formatCurrency(totalPrice)} VND</span>
+                                </div>
+                            </div>
+                            <button class="toggle-arrow-btn" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background: none; border: none; color: #00FFFF; font-size: 16px; cursor: pointer;">▼</button>
+                        </div>
+                    </div>
+                    <div class="order-details-container" style="display: none; background-color: #121212; border-radius: 4px; padding: 10px; margin-top: 5px; border-top: 1px dashed #333;">
+                    </div>
+                `;
+
+                orderListContainer.appendChild(orderItem);
+
+                // Thêm sự kiện click để hiển thị/ẩn chi tiết đơn hàng
+                orderItem.querySelector('.order-header').addEventListener('click', function (event) {
+                    if (!event.target.classList.contains('toggle-arrow-btn')) {
+                        toggleOrderDetails(orderItem);
+                    }
+                });
+            });
+        }
+
+        // Hàm để tải chi tiết đơn hàng
+        function loadOrderDetails(order, container) {
+            console.log("Loading order details:", order);
+            container.innerHTML = ''; // Xóa nội dung hiện tại
+
+            if (order.items && order.items.length > 0) {
+                order.items.forEach(item => {
+                    const orderDetail = document.createElement('div');
+                    orderDetail.className = 'order-detail';
+                    orderDetail.style.backgroundColor = '#1A1A1A';
+                    orderDetail.style.borderRadius = '4px';
+                    orderDetail.style.padding = '10px';
+                    orderDetail.style.marginBottom = '8px';
+                    orderDetail.style.borderTop = '1px dashed #333';
+
+                    let detailHTML = '';
+
+                    if (item.product_name) {
+                        detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Sản phẩm:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.product_name}</span></div>`;
+                    }
+
+                    if (item.variant_name) {
+                        detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Loại:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.variant_name}</span></div>`;
+                    } else if (item.variant_id) {
+                        detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Variant ID:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.variant_id}</span></div>`;
+                    }
+
+                    orderDetail.innerHTML = detailHTML;
+                    container.appendChild(orderDetail);
+                });
+
+                const header = orderItem.querySelector('.order-header');
+                const detailsContainer = orderItem.querySelector('.order-details-container');
+                const arrow = orderItem.querySelector('.toggle-arrow-btn');
+
+                header.addEventListener('click', () => {
+                    const isHidden = detailsContainer.style.display === 'none';
+                    detailsContainer.style.display = isHidden ? 'block' : 'none';
+                    arrow.textContent = isHidden ? '▲' : '▼';
+
+                    // Nếu đang hiển thị và chưa có nội dung, tải chi tiết đơn hàng
+                    if (isHidden && detailsContainer.children.length === 0) {
+                        loadOrderDetails(order, detailsContainer);
+                    }
+                });
+
+                // Log để debug
+                console.log('Added order ' + (index + 1) + ' to DOM');
+            }
+
+            // Thêm nút "Thông tin toàn bộ đơn hàng"
+            const showAllOrdersBtn = document.getElementById('show-all-orders-btn');
+            if (showAllOrdersBtn) {
+                showAllOrdersBtn.addEventListener('click', showAllOrders);
+            }
+
+            // Gắn sự kiện cho các nút và phần tử
+            setupOrderEventListeners();
+
+            console.log("Order history rendering complete");
+        }
+
+        // Hàm để tải chi tiết đơn hàng
+        function loadOrderDetails(order, container) {
+            if (!order.items || !Array.isArray(order.items) || order.items.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 10px; color: #E0E0E0; font-style: italic;">Không có thông tin chi tiết sản phẩm</div>';
+                return;
+            }
+
+            // Tính tổng tiền đơn hàng
+            let totalOrderAmount = 0;
+
+            // Hiển thị từng sản phẩm trong đơn hàng
+            order.items.forEach(item => {
+                const orderDetail = document.createElement('div');
+                orderDetail.className = 'order-detail';
+                orderDetail.style.backgroundColor = '#1A1A1A';
+                orderDetail.style.borderRadius = '4px';
+                orderDetail.style.padding = '10px';
+                orderDetail.style.marginBottom = '8px';
+                orderDetail.style.borderTop = '1px dashed #333';
+
+                let detailHTML = '';
+
+                if (item.product_name) {
+                    detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Sản phẩm:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.product_name}</span></div>`;
+                }
+
+                if (item.variant_name) {
+                    detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Loại:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.variant_name}</span></div>`;
+                } else if (item.variant_id) {
+                    detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #FF6B6B; font-weight: bold;">Variant ID:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.variant_id}</span></div>`;
+                }
+
+                detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Số lượng:</span> <span style="color: #E0E0E0;">${item.quantity}</span></div>`;
+
+                if (item.price != null) {
+                    detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Giá:</span> <span style="color: #E0E0E0;">${formatCurrency(item.price)} VND</span></div>`;
+
+                    if (item.quantity != null) {
+                        const subtotal = item.price * item.quantity;
+                        totalOrderAmount += subtotal;
+                        detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Thành tiền:</span> <span style="color: #E0E0E0;">${formatCurrency(subtotal)} VND</span></div>`;
+                    }
+                }
+
+                if (item.rate != null) {
+                    detailHTML += `<div style="margin-bottom: 5px;"><span style="color: #00FFFF;">Đánh giá:</span> <span style="color: #E0E0E0;">${item.rate} ⭐</span></div>`;
+                }
+
+                orderDetail.innerHTML = detailHTML;
+                container.appendChild(orderDetail);
+            });
+
+            // Thêm tổng tiền vào đầu container
+            const totalDiv = document.createElement('div');
+            totalDiv.style.marginBottom = '10px';
+            totalDiv.style.fontWeight = 'bold';
+            totalDiv.style.color = '#00FFFF';
+            totalDiv.style.fontSize = '0.9em';
+            totalDiv.style.padding = '10px';
+            totalDiv.style.backgroundColor = '#1A1A1A';
+            totalDiv.style.borderRadius = '4px';
+            totalDiv.innerHTML = `Tổng tiền: <span style="color: #E0E0E0;">${formatCurrency(totalOrderAmount)} VND</span>`;
+            container.insertBefore(totalDiv, container.firstChild);
+        }
+
+        // Hàm để khởi tạo đơn hàng trong sidebar
+        function initializeSidebarOrders() {
+            console.log("Initializing sidebar orders");
+            const orderList = document.getElementById('order-list');
+
+            if (!orderList) {
+                console.error("Order list container not found");
+                console.error("DOM structure may be incorrect or element with id 'order-list' does not exist");
+                return;
+            }
+
+            // Xóa nội dung hiện tại
+            orderList.innerHTML = '';
+
+            // Kiểm tra xem có dữ liệu đơn hàng không
+            console.log("Recent orders available:", window.recentOrders?.length || 0);
+            console.log("Recent orders for sidebar:", window.recentOrders);
+
+            // Kiểm tra DOM structure
+            console.log("Order list parent:", orderList.parentElement);
+            console.log("Order list parent HTML:", orderList.parentElement?.innerHTML);
+
+            if (!window.recentOrders || window.recentOrders.length === 0) {
+                console.log("No recent orders found");
+                orderList.innerHTML = '<div class="no-history"><p>Chưa có lịch sử mua hàng.</p></div>';
+                return;
+            }
+
+            console.log("Found", window.recentOrders.length, "recent orders to display");
+
+            // Hiển thị từng đơn hàng
+            window.recentOrders.forEach((order, index) => {
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+                orderItem.id = `order-${index + 1}`;
+                orderItem.setAttribute('data-order-id', order.id);
+
+                // Tính tổng tiền đơn hàng
+                let totalPrice = 0;
+                if (order.items && Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                        const price = parseFloat(item.price) || 0;
+                        const quantity = parseInt(item.quantity) || 0;
+                        totalPrice += price * quantity;
+                    });
+                }
+
+                // Tạo HTML cho đơn hàng
+                orderItem.innerHTML = `
+                    <div class="order-header" style="position: relative; cursor: pointer;">
+                        <div class="order-header-content" style="width: 100%; background-color: #1A1A1A; border-radius: 4px; padding: 12px; margin-bottom: 5px; position: relative;">
+                            <div style="margin-bottom: 5px; padding-right: 30px;">
+                                <span style="color: #FF3B30; font-weight: bold; font-size: 1.1em;">Đơn ${index + 1}:</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; padding-right: 30px;">
+                                <div style="margin-bottom: 5px;">
+                                    <span style="color: #00FFFF; font-weight: bold; font-size: 0.9em;">Ngày đặt: </span>
+                                    <span style="color: #E0E0E0; font-weight: bold; font-size: 0.9em;">${(order.date || order.order_date || '').split('T')[0] || 'N/A'}</span>
+                                </div>
+                                <div class="order-total">
+                                    <span style="color: #00FFFF; font-weight: bold; font-size: 0.9em;">Số sản phẩm: </span>
+                                    <span style="color: #E0E0E0; font-weight: bold; font-size: 0.9em; word-break: break-word;">${order.items ? order.items.length : 0}</span>
+                                </div>
+                                <div class="order-total-price" style="margin-top: 5px;">
+                                    <span style="color: #00FFFF; font-weight: bold; font-size: 0.9em;">Tổng tiền: </span>
+                                    <span style="color: #E0E0E0; font-weight: bold; font-size: 0.9em;">${formatCurrency(totalPrice)} VND</span>
+                                </div>
+                            </div>
+                            <button class="toggle-arrow-btn" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background: none; border: none; color: #00FFFF; font-size: 16px; cursor: pointer;">▼</button>
+                        </div>
+                    </div>
+                    <div class="order-details-container" style="display: none; background-color: #121212; border-radius: 4px; padding: 10px; margin-top: 5px; border-top: 1px dashed #333;">
+                    </div>
+                `;
+
+                orderList.appendChild(orderItem);
+
+                // Thêm sự kiện click để hiển thị/ẩn chi tiết đơn hàng
+                const header = orderItem.querySelector('.order-header');
+                const detailsContainer = orderItem.querySelector('.order-details-container');
+                const arrow = orderItem.querySelector('.toggle-arrow-btn');
+
+                header.addEventListener('click', () => {
+                    const isHidden = detailsContainer.style.display === 'none';
+                    detailsContainer.style.display = isHidden ? 'block' : 'none';
+                    arrow.textContent = isHidden ? '▲' : '▼';
+
+                    // Nếu đang hiển thị và chưa có nội dung, tải chi tiết đơn hàng
+                    if (isHidden && detailsContainer.children.length === 0) {
+                        loadOrderDetails(order, detailsContainer);
+                    }
+                });
+            });
+
+            console.log("Sidebar orders initialized");
+        }
+
+        // Thêm event listener cho tất cả các nút khi trang đã tải xong
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("DOM loaded, checking elements...");
+
+            // Kiểm tra các phần tử DOM quan trọng
+            const orderList = document.getElementById('order-list');
+            console.log("Order list container:", orderList);
+
+            const sidebar = document.getElementById('sidebar');
+            console.log("Sidebar element:", sidebar);
+
+            const purchaseHistory = document.querySelector('.purchase-history');
+            console.log("Purchase history container:", purchaseHistory);
+
+            // Kiểm tra xem người dùng đã đăng nhập chưa
+            const userId = '{{ session.user_id }}';
+            console.log("User ID from session:", userId);
+
+            if (userId && userId !== 'guest') {
+                console.log("User is logged in, fetching orders...");
+                // Lấy thông tin đơn hàng từ API
+                fetchOrderData()
+                    .then(() => {
+                        console.log("Orders fetched successfully");
+                    })
+                    .catch(error => {
+                        console.error("Error fetching orders:", error);
+                        console.error("Error details:", {
+                            message: error.message,
+                            stack: error.stack
+                        });
+                        showOrderError();
+                    });
+            } else {
+                console.log("User is not logged in or is a guest");
+            }
+
+            // Kiểm tra chi tiết từng đơn hàng
+            if (window.recentOrders && window.recentOrders.length > 0) {
+                window.recentOrders.forEach((order, index) => {
+                    console.log(`Order ${index + 1}:`, order);
+                    console.log(`Order ${index + 1} items type:`, typeof order.items);
+                    console.log(`Order ${index + 1} items is array:`, Array.isArray(order.items));
+                    console.log(`Order ${index + 1} items is callable:`, typeof order.items === 'function');
+                    console.log(`Order ${index + 1} items value:`, order.items);
+
+                    if (order.items && Array.isArray(order.items)) {
+                        console.log(`Order ${index + 1} has ${order.items.length} items`);
+                        order.items.forEach((item, itemIndex) => {
+                            console.log(`Item ${itemIndex + 1}:`, item);
+                        });
+                    } else {
+                        console.log(`Order ${index + 1} has no items or items is not an array`);
+                        // Sửa lỗi nếu items không phải là array
+                        if (order.items && !Array.isArray(order.items)) {
+                            try {
+                                console.log("Attempting to convert items to array");
+                                order.items = Array.isArray(order.items) ? order.items : [];
+                                console.log("After conversion:", order.items);
+                            } catch (e) {
+                                console.error("Error converting items to array:", e);
+                                order.items = [];
+                            }
+                        } else if (!order.items) {
+                            order.items = [];
+                        }
+                    }
+                });
+            }
+
+            // Kiểm tra và đảm bảo rằng mỗi đơn hàng có thuộc tính data-order-id
+            document.querySelectorAll('.purchase-history .order-item').forEach((orderItem, index) => {
+                if (!orderItem.hasAttribute('data-order-id') && window.recentOrders && window.recentOrders.length > 0) {
+                    if (index < window.recentOrders.length) {
+                        const order = window.recentOrders[index];
+                        if (order && order.id) {
+                            orderItem.setAttribute('data-order-id', order.id);
+                            console.log('Added data-order-id=' + order.id + ' to order item #' + (index + 1));
+                        }
+                    }
+                }
+            });
+
+            // Thêm event listener cho nút "Thông tin toàn bộ đơn hàng"
+            const showAllOrdersBtn = document.getElementById('show-all-orders-btn');
+            if (showAllOrdersBtn) {
+                showAllOrdersBtn.addEventListener('click', function (event) {
+                    console.log("Show all orders button clicked");
+                    event.preventDefault();
+                    showAllOrders();
+                });
+            }
+
+            // Thêm event listener cho nút "Kiểm tra kết nối"
+            const testBtn = document.getElementById('test-btn');
+            if (testBtn) {
+                testBtn.addEventListener('click', async function (event) {
+                    console.log("Test button clicked");
+                    event.preventDefault();
+
+                    try {
+                        console.log("Sending test request to /recommend/api/test");
+                        const response = await fetch('/recommend/api/test', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                message: "Test message",
+                                user_id: '{{ session.user_id }}'
+                            }),
+                        });
+
+                        console.log("Test response status:", response.status);
+                        const responseText = await response.text();
+                        console.log("Test raw response:", responseText);
+
+                        // Hiển thị kết quả test trong chat
+                        const chatManager = window.chatManager;
+                        if (chatManager) {
+                            chatManager.addMessage("Đã gửi yêu cầu kiểm tra kết nối. Kết quả: " +
+                                (response.ok ? "✅ Thành công" : "❌ Thất bại") +
+                                "<br>Chi tiết: " + responseText);
+                        }
+                    } catch (error) {
+                        console.error("Test request error:", error);
+
+                        // Hiển thị lỗi trong chat
+                        const chatManager = window.chatManager;
+                        if (chatManager) {
+                            chatManager.addMessage("❌ Lỗi khi kiểm tra kết nối: " + error.message);
+                        }
+                    }
+                });
+            }
+
+            // Thêm event listener trực tiếp cho tất cả các đơn hàng trong sidebar
+            document.querySelectorAll('.purchase-history .order-item').forEach(function (orderItem) {
+                // Thêm event listener cho nút toggle arrow
+                const toggleButton = orderItem.querySelector('.toggle-arrow-btn');
+                if (toggleButton) {
+                    toggleButton.addEventListener('click', function (event) {
+                        console.log("Direct toggle button clicked");
+                        event.preventDefault();
+                        event.stopPropagation();
+                        toggleOrderDetails(orderItem);
+                    });
+                }
+
+                // Thêm event listener cho header đơn hàng
+                const orderHeader = orderItem.querySelector('.order-header');
+                if (orderHeader) {
+                    orderHeader.addEventListener('click', function (event) {
+                        console.log("Direct order header clicked");
+                        if (!event.target.classList.contains('toggle-arrow-btn')) {
+                            toggleOrderDetails(orderItem);
+                        }
+                    });
+                }
+            });
+        });
+
+        class ChatManager {
+            constructor() {
+                // DOM elements
+                this.chatMessages = document.getElementById('chat-messages');
+                this.userInput = document.getElementById('user-input');
+                this.sendBtn = document.getElementById('send-btn');
+                this.typingIndicator = document.getElementById('typing-indicator');
+                this.logoutBtn = document.getElementById('logout-btn');
+                this.clearBtn = document.getElementById('clear-btn');
+                this.uploadBtn = document.getElementById('upload-btn');
+                this.toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+                this.sidebar = document.getElementById('sidebar');
+                this.verifyBtn = document.getElementById('verify-btn');
+                this.showAllOrdersBtn = document.getElementById('show-all-orders-btn');
+
+                // Configuration
+                this.retryQueue = [];
+                this.maxRetries = 3;
+                this.retryDelay = 1000;
+                this.fileInput = null; // Will be created when needed
+                this.faceAuthUrl = '/face-auth/'; // URL for face authentication
+
+                this.initializeEventListeners();
+                this.loadSidebarState();
+            }
+
+            loadSidebarState() {
+                // Check if we have a saved state
+                const isCollapsed = localStorage.getItem('sidebarCollapsed');
+
+                // If we have a saved state and it's "true", collapse the sidebar
+                if (isCollapsed === 'true' && this.sidebar) {
+                    this.sidebar.classList.add('sidebar-collapsed');
+                }
+            }
+
+            initializeEventListeners() {
+                // Chat functionality
+                this.sendBtn.addEventListener('click', () => this.handleSendMessage());
+                this.userInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.handleSendMessage();
+                    }
+                });
+
+                // User actions
+                if (this.logoutBtn) {
+                    this.logoutBtn.addEventListener('click', () => this.handleLogout());
+                }
+
+                if (this.clearBtn) {
+                    this.clearBtn.addEventListener('click', () => this.clearChatHistory());
+                }
+
+                if (this.uploadBtn) {
+                    this.uploadBtn.addEventListener('click', () => this.handleImageUpload());
+                }
+
+                if (this.toggleSidebarBtn) {
+                    this.toggleSidebarBtn.addEventListener('click', () => this.toggleSidebar());
+                }
+
+                // Add event listener to the show all orders button
+                if (this.showAllOrdersBtn) {
+                    this.showAllOrdersBtn.addEventListener('click', () => this.showAllOrders());
+                }
+
+                // Add event listener to the verify buttons
+                const verifyBtn = document.getElementById('verify-btn');
+                if (verifyBtn) {
+                    verifyBtn.addEventListener('click', () => this.redirectToFaceAuth());
+                }
+
+                const verifyBtnWelcome = document.getElementById('verify-btn-welcome');
+                if (verifyBtnWelcome) {
+                    verifyBtnWelcome.addEventListener('click', () => this.redirectToFaceAuth());
+                }
+
+                const verifyBtnSidebar = document.getElementById('verify-btn-sidebar');
+                if (verifyBtnSidebar) {
+                    verifyBtnSidebar.addEventListener('click', () => this.redirectToFaceAuth());
+                }
+
+                // Add event listeners to all verification text links
+                this.setupVerificationTextLinks();
+
+                // Add direct click handler to document for any verification links
+                document.addEventListener('click', (e) => {
+                    if (e.target && e.target.classList && e.target.classList.contains('verify-text-link')) {
+                        e.preventDefault();
+                        this.redirectToFaceAuth();
+                    } else if (e.target && e.target.parentElement && e.target.parentElement.classList && e.target.parentElement.classList.contains('verify-text-link')) {
+                        e.preventDefault();
+                        this.redirectToFaceAuth();
+                    }
+
+                    // Handle inline-verify-btn clicks
+                    if (e.target && e.target.classList && e.target.classList.contains('inline-verify-btn')) {
+                        e.preventDefault();
+                        this.redirectToFaceAuth();
+                    } else if (e.target && e.target.parentElement && e.target.parentElement.classList && e.target.parentElement.classList.contains('inline-verify-btn')) {
+                        e.preventDefault();
+                        this.redirectToFaceAuth();
+                    }
+                });
+            }
+
+            setupVerificationTextLinks() {
+                // Get all verification text links
+                const verifyLinks = document.querySelectorAll('.verify-text-link');
+
+                if (!verifyLinks || verifyLinks.length === 0) {
+                    console.log('No verification text links found');
+                    return;
+                }
+
+                console.log(`Found ${verifyLinks.length} verification text links`);
+
+                // Add click event listener to each link
+                verifyLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        console.log('Verification text link clicked');
+                        this.redirectToFaceAuth();
+                    });
+                });
+            }
+
+            redirectToFaceAuth() {
+                console.log('Redirecting to face authentication page with force parameter');
+                // Use direct window.location assignment for more reliable redirection
+                window.location = '/customer/?force=true';
+            }
+
+
+
+            toggleSidebar() {
+                if (this.sidebar) {
+                    this.sidebar.classList.toggle('sidebar-collapsed');
+
+                    // Save sidebar state to localStorage
+                    const isCollapsed = this.sidebar.classList.contains('sidebar-collapsed');
+                    localStorage.setItem('sidebarCollapsed', isCollapsed);
+                }
+            }
+
+            async handleSendMessage() {
+                const message = this.userInput.value.trim();
+                if (!message) return;
+
+                this.userInput.value = '';
+                // Lưu giá trị trả về từ addMessage()
+                const messageDiv = this.addMessage(message, true);
+                this.showTypingIndicator();
+
+                try {
+                    console.log('Sending message:', message);
+                    const response = await this.sendMessageToServer(message);
+                    this.hideTypingIndicator();
+                    console.log('Received response:', response);
+
+                    console.log('Response type:', typeof response);
+                    console.log('Response keys:', Object.keys(response));
+
+                    console.log('Response structure:', JSON.stringify(response));
+
+                    if (response && response.success && response.data && response.data.response) {
+                        // Standard API response format
+                        console.log('Adding bot response from standard format:', response.data.response);
+                        this.addMessage(response.data.response);
+
+                        // Check if there are products to display
+                        if (response.data.products && response.data.products.length > 0) {
+                            this.displayProductImages(response.data.products);
+                        }
+                    } else if (response && response.response) {
+                        // Fallback for direct response format
+                        console.log('Adding direct response:', response.response);
+                        this.addMessage(response.response);
+                    } else if (response && typeof response === 'string') {
+                        // Handle plain text response
+                        console.log('Adding plain text response:', response);
+                        this.addMessage(response);
+                    } else if (response && typeof response === 'object') {
+                        // Try to extract response from any object structure
+                        console.log('Trying to extract response from object:', response);
+
+                        // Check various possible response formats
+                        if (response.data) {
+                            if (typeof response.data === 'string') {
+                                console.log('Found string in response.data:', response.data);
+                                this.addMessage(response.data);
+                            } else if (response.data.message) {
+                                console.log('Found message in response.data:', response.data.message);
+                                this.addMessage(response.data.message);
+                            } else if (response.data.text) {
+                                console.log('Found text in response.data:', response.data.text);
+                                this.addMessage(response.data.text);
+                            } else {
+                                console.log('No recognizable text in response.data, using stringify:', JSON.stringify(response.data));
+                                this.addMessage("Phản hồi từ server: " + JSON.stringify(response.data));
+                            }
+                        } else if (response.message) {
+                            console.log('Found message in response:', response.message);
+                            this.addMessage(response.message);
+                        } else if (response.text) {
+                            console.log('Found text in response:', response.text);
+                            this.addMessage(response.text);
+                        } else if (response.error) {
+                            console.error('Error in response:', response.error);
+                            this.handleError(new Error(response.error), message);
+                        } else {
+                            // Last resort: stringify the entire response
+                            console.log('No recognizable format, using stringify:', JSON.stringify(response));
+                            this.addMessage("Phản hồi từ server: " + JSON.stringify(response));
+                        }
+                    } else {
+                        console.error('Empty or unrecognized response');
+                        this.handleError(new Error('Không thể xử lý phản hồi từ server'), message);
+                    }
+                } catch (error) {
+                    console.error('Error in handleSendMessage:', error);
+                    this.hideTypingIndicator();
+                    this.handleError(error, message);
+                }
+            }
+
+            // Add a thinking indicator to show the bot is processing
+            showThinkingIndicator() {
+                // Use the existing typing indicator or create a new one
+                if (this.typingIndicator) {
+                    this.typingIndicator.style.display = 'block';
+                } else {
+                    // Tạo container cho indicator
+                    const containerDiv = document.createElement('div');
+                    containerDiv.classList.add('bot-message-container');
+                    containerDiv.id = 'thinking-container';
+
+                    // Tạo icon chatbot
+                    const iconDiv = document.createElement('div');
+                    iconDiv.classList.add('bot-icon');
+                    iconDiv.innerHTML = '🤔';
+
+                    // Tạo indicator
+                    const thinkingDiv = document.createElement('div');
+                    thinkingDiv.classList.add('message', 'bot-message', 'thinking-message');
+                    thinkingDiv.innerHTML = '<i>Đang xử lý...</i>';
+                    thinkingDiv.id = 'thinking-indicator';
+
+                    // Thêm icon và indicator vào container
+                    containerDiv.appendChild(iconDiv);
+                    containerDiv.appendChild(thinkingDiv);
+
+                    // Thêm container vào chat
+                    this.chatMessages.appendChild(containerDiv);
+                }
+                this.scrollToBottom();
+            }
+
+            // Remove the thinking indicator
+            removeThinkingIndicator() {
+                // Use the existing typing indicator or find the one we created
+                if (this.typingIndicator) {
+                    this.typingIndicator.style.display = 'none';
+                } else {
+                    const container = document.getElementById('thinking-container');
+                    if (container) {
+                        this.chatMessages.removeChild(container);
+                    }
+                }
+            }
+
+            async sendMessageToServer(message, retryCount = 0) {
+                try {
+                    console.log('Sending message to server:', message);
+                    console.log('API endpoint: /recommend/api/chat');
+                    console.log('User ID:', '{{ session.user_id }}');
+
+                    // Thêm log chi tiết
+                    const requestBody = JSON.stringify({
+                        message: message,
+                        user_id: '{{ session.user_id }}'
+                    });
+                    console.log('Request body:', requestBody);
+
+                    const response = await fetch('/recommend/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: requestBody,
+                    });
+
+                    console.log('Response status:', response.status);
+                    const responseText = await response.text();
+                    console.log('Raw response:', responseText);
+
+                    let data;
+                    try {
+                        // Kiểm tra xem responseText có phải là chuỗi rỗng không
+                        if (!responseText || responseText.trim() === '') {
+                            console.error('Empty response from server');
+                            throw new Error('Empty response from server');
+                        }
+
+                        // Kiểm tra xem responseText có phải là JSON hợp lệ không
+                        try {
+                            data = JSON.parse(responseText);
+                            console.log('Parsed response data:', data);
+                        } catch (jsonError) {
+                            console.error('Error parsing response JSON:', jsonError);
+                            // Nếu không phải JSON, sử dụng responseText trực tiếp
+                            data = { response: responseText };
+                            console.log('Using raw text as response:', data);
+                        }
+                    } catch (parseError) {
+                        console.error('Error handling response:', parseError);
+                        throw new Error('Invalid response from server: ' + parseError.message);
+                    }
+
+                    if (response.status === 429) {
+                        // Rate limit hit
+                        const waitTime = data.error.details.wait_seconds;
+                        this.showRateLimitMessage(waitTime);
+                        return null;
+                    }
+
+                    if (!response.ok) {
+                        console.error('Response not OK:', data.error);
+                        throw new Error(data.error?.message || 'Network response was not ok');
+                    }
+
+                    return data;
+
+                } catch (error) {
+                    if (retryCount < this.maxRetries) {
+                        await new Promise(resolve => setTimeout(resolve, this.retryDelay * (retryCount + 1)));
+                        return this.sendMessageToServer(message, retryCount + 1);
+                    }
+                    throw error;
+                }
+            }
+
+            handleError(error, originalMessage) {
+                console.error('Error:', error);
+
+                // Tạo container cho thông báo lỗi
+                const containerDiv = document.createElement('div');
+                containerDiv.classList.add('bot-message-container');
+
+                // Tạo icon cảnh báo
+                const iconDiv = document.createElement('div');
+                iconDiv.classList.add('bot-icon');
+                iconDiv.innerHTML = '⚠️';
+                iconDiv.style.backgroundColor = '#FF6B6B'; // Màu đỏ cho icon cảnh báo
+
+                // Tạo thông báo lỗi
+                const errorDiv = document.createElement('div');
+                errorDiv.classList.add('message', 'bot-message', 'error-message');
+                errorDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i> Xin lỗi, đã xảy ra lỗi khi xử lý yêu cầu của bạn.
+                    <button class="retry-button" onclick="chatManager.retryMessage('${originalMessage}')">
+                        <i class="fas fa-redo"></i> Thử lại
+                    </button>
+                `;
+
+                // Thêm icon và thông báo lỗi vào container
+                containerDiv.appendChild(iconDiv);
+                containerDiv.appendChild(errorDiv);
+
+                // Thêm container vào chat
+                this.chatMessages.appendChild(containerDiv);
+                this.scrollToBottom();
+            }
+
+            showRateLimitMessage(waitTime) {
+                // Tạo container cho thông báo giới hạn tốc độ
+                const containerDiv = document.createElement('div');
+                containerDiv.classList.add('bot-message-container');
+
+                // Tạo icon cảnh báo
+                const iconDiv = document.createElement('div');
+                iconDiv.classList.add('bot-icon');
+                iconDiv.innerHTML = '⏱️';
+                iconDiv.style.backgroundColor = '#FFD166'; // Màu vàng cho icon cảnh báo
+
+                // Tạo thông báo giới hạn tốc độ
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'bot-message', 'rate-limit-message');
+                messageDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> Bạn đã gửi quá nhiều tin nhắn. Vui lòng đợi ${waitTime} giây.`;
+
+                // Thêm icon và thông báo vào container
+                containerDiv.appendChild(iconDiv);
+                containerDiv.appendChild(messageDiv);
+
+                // Thêm container vào chat
+                this.chatMessages.appendChild(containerDiv);
+                this.scrollToBottom();
+            }
+
+            async retryMessage(message) {
+                // Remove the error message
+                const errorMessages = this.chatMessages.getElementsByClassName('error-message');
+                if (errorMessages.length > 0) {
+                    errorMessages[errorMessages.length - 1].remove();
+                }
+
+                // Retry sending the message
+                this.showTypingIndicator();
+                try {
+                    const response = await this.sendMessageToServer(message);
+                    this.hideTypingIndicator();
+
+                    if (response && response.success && response.data && response.data.response) {
+                        // Standard API response format
+                        console.log('Adding bot response from standard format:', response.data.response);
+                        this.addMessage(response.data.response);
+
+                        // Check if there are products to display
+                        if (response.data.products && response.data.products.length > 0) {
+                            this.displayProductImages(response.data.products);
+                        }
+                    } else if (response && response.response) {
+                        // Fallback for direct response format
+                        console.log('Adding direct response:', response.response);
+                        this.addMessage(response.response);
+                    } else if (response && typeof response === 'string') {
+                        // Handle plain text response
+                        console.log('Adding plain text response:', response);
+                        this.addMessage(response);
+                    } else if (response && typeof response === 'object') {
+                        // Try to extract response from any object structure
+                        console.log('Trying to extract response from object:', response);
+
+                        // Check various possible response formats
+                        if (response.data) {
+                            if (typeof response.data === 'string') {
+                                console.log('Found string in response.data:', response.data);
+                                this.addMessage(response.data);
+                            } else if (response.data.message) {
+                                console.log('Found message in response.data:', response.data.message);
+                                this.addMessage(response.data.message);
+                            } else if (response.data.text) {
+                                console.log('Found text in response.data:', response.data.text);
+                                this.addMessage(response.data.text);
+                            } else {
+                                console.log('No recognizable text in response.data, using stringify:', JSON.stringify(response.data));
+                                this.addMessage("Phản hồi từ server: " + JSON.stringify(response.data));
+                            }
+                        } else if (response.message) {
+                            console.log('Found message in response:', response.message);
+                            this.addMessage(response.message);
+                        } else if (response.text) {
+                            console.log('Found text in response:', response.text);
+                            this.addMessage(response.text);
+                        } else if (response.error) {
+                            console.error('Error in response:', response.error);
+                            this.handleError(new Error(response.error), message);
+                        } else {
+                            // Last resort: stringify the entire response
+                            console.log('No recognizable format, using stringify:', JSON.stringify(response));
+                            this.addMessage("Phản hồi từ server: " + JSON.stringify(response));
+                        }
+                    } else {
+                        console.error('Empty or unrecognized response');
+                        this.handleError(new Error('Không thể xử lý phản hồi từ server'), message);
+                    }
+                } catch (error) {
+                    this.hideTypingIndicator();
+                    this.handleError(error, message);
+                }
+            }
+
+            addMessage(message, isUser = false) {
+                let messageDiv; // Khai báo biến messageDiv ở đầu hàm
+                let containerDiv; // Khai báo biến containerDiv ở đầu hàm
+
+                if (isUser) {
+                    // Nếu là tin nhắn của người dùng, tạo container chứa cả icon và tin nhắn
+                    containerDiv = document.createElement('div');
+                    containerDiv.classList.add('user-message-container');
+
+                    // Tạo icon người dùng
+                    const iconDiv = document.createElement('div');
+                    iconDiv.classList.add('user-icon-message');
+                    iconDiv.innerHTML = '👤';
+
+                    // Tạo tin nhắn người dùng
+                    messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message', 'user-message');
+
+                    // Xử lý nội dung tin nhắn trước khi gán vào messageDiv
+                    let processedMessage = message;
+
+                    // Check if the message contains HTML
+                    if (!message.includes('<') || !message.includes('>')) {
+                        // Convert URLs to links
+                        processedMessage = processedMessage.replace(/\b(https?:\/\/\S+)/g, '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>');
+                        // Convert newlines to <br>
+                        processedMessage = processedMessage.replace(/\n/g, '<br>');
+                    }
+
+                    // Gán nội dung đã xử lý vào messageDiv
+                    messageDiv.innerHTML = processedMessage;
+
+                    // Thêm tin nhắn và icon vào container (thứ tự ngược lại so với bot message)
+                    containerDiv.appendChild(messageDiv);
+                    containerDiv.appendChild(iconDiv);
+
+                    // Đảm bảo tin nhắn vừa đủ với nội dung
+                    messageDiv.style.maxWidth = "fit-content";
+
+                    // Thêm container vào chat
+                    this.chatMessages.appendChild(containerDiv);
+                } else {
+                    // Nếu là tin nhắn của chatbot, tạo container chứa cả icon và tin nhắn
+                    containerDiv = document.createElement('div');
+                    containerDiv.classList.add('bot-message-container');
+
+                    // Tạo icon chatbot
+                    const iconDiv = document.createElement('div');
+                    iconDiv.classList.add('bot-icon');
+                    iconDiv.innerHTML = '🤖';
+
+                    // Tạo tin nhắn chatbot
+                    messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message', 'bot-message');
+
+                    // Xử lý nội dung tin nhắn trước khi gán vào messageDiv
+                    let processedMessage = message;
+
+                    // Check if the message contains HTML
+                    if (!message.includes('<') || !message.includes('>')) {
+                        // Convert URLs to links
+                        processedMessage = processedMessage.replace(/\b(https?:\/\/\S+)/g, '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>');
+                        // Convert newlines to <br>
+                        processedMessage = processedMessage.replace(/\n/g, '<br>');
+                        // Convert "xác minh danh tính" text to verification buttons
+                        processedMessage = processedMessage.replace(/(xác minh danh tính|xác thực danh tính|xác minh|xác thực)/gi,
+                            '<button class="inline-verify-btn">$1</button>');
+                    }
+
+                    // Gán nội dung đã xử lý vào messageDiv
+                    messageDiv.innerHTML = processedMessage;
+
+                    // Thêm icon và tin nhắn vào container
+                    containerDiv.appendChild(iconDiv);
+                    containerDiv.appendChild(messageDiv);
+
+                    // Thêm container vào chat
+                    this.chatMessages.appendChild(containerDiv);
+
+                    // Kiểm tra chiều cao của tin nhắn để thêm nút "Xem thêm" nếu cần
+                    // Sử dụng setTimeout để đảm bảo tin nhắn đã được render đầy đủ
+                    setTimeout(() => {
+                        // Lấy chiều cao thực tế của tin nhắn
+                        const messageHeight = messageDiv.scrollHeight;
+
+                        // Nếu tin nhắn quá dài (> 400px), thêm nút "Xem thêm"
+                        if (messageHeight > 400) {
+                            // Thêm class collapsed để giới hạn chiều cao
+                            messageDiv.classList.add('collapsed');
+
+                            // Tạo nút "Xem thêm" với mũi tên
+                            const showMoreBtn = document.createElement('button');
+                            showMoreBtn.classList.add('show-more-btn');
+
+                            // Tạo span cho text
+                            const btnText = document.createElement('span');
+                            btnText.textContent = 'Xem thêm';
+
+                            // Tạo span cho mũi tên
+                            const btnArrow = document.createElement('span');
+                            btnArrow.classList.add('arrow', 'down');
+                            btnArrow.innerHTML = '&#9660;'; // Mũi tên xuống Unicode
+
+                            // Thêm text và mũi tên vào nút
+                            showMoreBtn.appendChild(btnText);
+                            showMoreBtn.appendChild(btnArrow);
+
+                            // Thêm sự kiện click cho nút "Xem thêm"
+                            showMoreBtn.addEventListener('click', () => {
+                                // Nếu tin nhắn đang bị thu gọn, mở rộng nó
+                                if (messageDiv.classList.contains('collapsed')) {
+                                    messageDiv.classList.remove('collapsed');
+                                    btnText.textContent = 'Thu gọn';
+                                    btnArrow.classList.remove('down');
+                                    btnArrow.classList.add('up');
+                                } else {
+                                    // Nếu tin nhắn đang mở rộng, thu gọn nó
+                                    messageDiv.classList.add('collapsed');
+                                    btnText.textContent = 'Xem thêm';
+                                    btnArrow.classList.remove('up');
+                                    btnArrow.classList.add('down');
+
+                                    // Cuộn lên đầu tin nhắn
+                                    messageDiv.scrollIntoView({ behavior: 'smooth' });
+                                }
+
+                                // Cuộn xuống để hiển thị nút sau khi thay đổi
+                                this.scrollToBottom();
+                            });
+
+                            // Thêm nút vào sau tin nhắn
+                            containerDiv.insertBefore(showMoreBtn, messageDiv.nextSibling);
+                        }
+                    }, 100); // Đợi 100ms để đảm bảo tin nhắn đã được render
+                }
+
+                this.scrollToBottom();
+
+                // Add event listeners to any verification buttons in the message
+                const allVerifyButtons = this.chatMessages.querySelectorAll('.inline-verify-btn');
+                allVerifyButtons.forEach(btn => {
+                    if (!btn.hasAttribute('data-listener-added')) {
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            this.redirectToFaceAuth();
+                        });
+                        btn.setAttribute('data-listener-added', 'true');
+                    }
+                });
+
+                return isUser ? messageDiv : containerDiv;
+            }
+
+            displayProductImages(products) {
+                if (!products || products.length === 0) {
+                    return; // No products to display
+                }
+
+                // Tạo container cho sản phẩm
+                const containerDiv = document.createElement('div');
+                containerDiv.classList.add('bot-message-container');
+
+                // Tạo icon sản phẩm
+                const iconDiv = document.createElement('div');
+                iconDiv.classList.add('bot-icon');
+                iconDiv.innerHTML = '🛍️';
+                iconDiv.style.backgroundColor = '#6BCB77'; // Màu xanh lá cho icon sản phẩm
+
+                // Create a standard assistant message specifically for products
+                const productsDiv = document.createElement('div');
+                productsDiv.classList.add('message', 'bot-message');
+
+                // Add a title for the products section
+                const titleElem = document.createElement('strong');
+                titleElem.textContent = 'Sản phẩm được đề xuất:';
+                titleElem.classList.add('product-title');
+                productsDiv.appendChild(titleElem);
+
+                // Create a grid container for products
+                const gridContainer = document.createElement('div');
+                gridContainer.classList.add('product-grid');
+
+                // Add special class based on number of products for balanced layout
+                if (products.length === 1) {
+                    gridContainer.classList.add('grid-1-item');
+                } else if (products.length === 2) {
+                    gridContainer.classList.add('grid-2-items');
+                }
+
+                // Add each product with its image
+                for (const product of products) {
+                    const productCard = document.createElement('div');
+
+                    const imageContainer = document.createElement('div');
+                    imageContainer.classList.add('product-image-container');
+
+                    const img = document.createElement('img');
+                    img.src = product.image_product || product.image || '';
+                    img.alt = product.name || 'Sản phẩm';
+                    img.classList.add('product-image');
+
+                    const nameElem = document.createElement('div');
+                    nameElem.textContent = product.name || 'Sản phẩm';
+                    nameElem.classList.add('product-name');
+
+                    imageContainer.appendChild(img);
+                    productCard.appendChild(imageContainer);
+                    productCard.appendChild(nameElem);
+                    gridContainer.appendChild(productCard);
+                }
+
+                productsDiv.appendChild(gridContainer);
+
+                // Thêm icon và sản phẩm vào container
+                containerDiv.appendChild(iconDiv);
+                containerDiv.appendChild(productsDiv);
+
+                // Thêm container vào chat
+                this.chatMessages.appendChild(containerDiv);
+                this.scrollToBottom();
+            }
+
+            showTypingIndicator() {
+                this.typingIndicator.style.display = 'block';
+                this.scrollToBottom();
+            }
+
+            hideTypingIndicator() {
+                this.typingIndicator.style.display = 'none';
+            }
+
+            scrollToBottom() {
+                // Sử dụng setTimeout để đảm bảo cuộn sau khi DOM đã được cập nhật
+                setTimeout(() => {
+                    this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+                }, 50);
+            }
+
+            async handleLogout() {
+                try {
+                    const response = await fetch('/logout');
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        console.error('Logout failed');
+                    }
+                } catch (error) {
+                    console.error('Error during logout:', error);
+                }
+            }
+
+            async clearChatHistory() {
+                try {
+                    const response = await fetch('/recommend/api/clear-history', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        // Clear chat messages except the first one (welcome message)
+                        const welcomeMessage = this.chatMessages.firstElementChild;
+                        this.chatMessages.innerHTML = '';
+                        if (welcomeMessage) {
+                            this.chatMessages.appendChild(welcomeMessage);
+                        }
+
+                        // Add confirmation message
+                        this.addMessage("Lịch sử chat đã được xóa thành công.");
+                    } else {
+                        this.handleError(data.error || new Error('Failed to clear chat history'), '');
+                    }
+                } catch (error) {
+                    console.error('Error clearing chat history:', error);
+                    this.handleError(error, '');
+                }
+            }
+
+            handleImageUpload() {
+                // Create file input if it doesn't exist
+                if (!this.fileInput) {
+                    this.fileInput = document.createElement('input');
+                    this.fileInput.type = 'file';
+                    this.fileInput.accept = 'image/*';
+                    this.fileInput.style.display = 'none';
+                    document.body.appendChild(this.fileInput);
+
+                    this.fileInput.addEventListener('change', (e) => {
+                        if (e.target.files.length > 0) {
+                            this.uploadImage(e.target.files[0]);
+                        }
+                    });
+                }
+
+                // Trigger file selection
+                this.fileInput.click();
+            }
+
+            showAllOrders() {
+                // Lấy dữ liệu đơn hàng từ session hoặc biến toàn cục
+                const allOrdersData = window.allOrders || [];
+
+                // Tạo modal hiển thị tất cả đơn hàng
+                const modalOverlay = document.createElement('div');
+                modalOverlay.classList.add('modal-overlay');
+                modalOverlay.style.position = 'fixed';
+                modalOverlay.style.top = '0';
+                modalOverlay.style.left = '0';
+                modalOverlay.style.width = '100%';
+                modalOverlay.style.height = '100%';
+                modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                modalOverlay.style.zIndex = '1000';
+                modalOverlay.style.display = 'flex';
+                modalOverlay.style.justifyContent = 'center';
+                modalOverlay.style.alignItems = 'center';
+
+                const modalContent = document.createElement('div');
+                modalContent.classList.add('modal-content');
+                modalContent.style.backgroundColor = '#121212';
+                modalContent.style.color = '#E0E0E0';
+                modalContent.style.borderRadius = '8px';
+                modalContent.style.padding = '20px';
+                modalContent.style.maxWidth = '80%';
+                modalContent.style.maxHeight = '80%';
+                modalContent.style.overflowY = 'auto';
+                modalContent.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.5)';
+
+                // Thêm tiêu đề
+                const modalHeader = document.createElement('div');
+                modalHeader.style.display = 'flex';
+                modalHeader.style.justifyContent = 'space-between';
+                modalHeader.style.alignItems = 'center';
+                modalHeader.style.marginBottom = '15px';
+                modalHeader.style.borderBottom = '1px solid #333';
+                modalHeader.style.paddingBottom = '10px';
+
+                const modalTitle = document.createElement('h3');
+                modalTitle.textContent = 'Thông tin toàn bộ đơn hàng';
+                modalTitle.style.margin = '0';
+                modalTitle.style.color = '#00FFFF';
+
+                const closeButton = document.createElement('button');
+                closeButton.innerHTML = '&times;';
+                closeButton.style.background = 'none';
+                closeButton.style.border = 'none';
+                closeButton.style.fontSize = '24px';
+                closeButton.style.cursor = 'pointer';
+                closeButton.style.color = '#E0E0E0';
+                closeButton.onclick = () => {
+                    document.body.removeChild(modalOverlay);
+                };
+
+                modalHeader.appendChild(modalTitle);
+                modalHeader.appendChild(closeButton);
+                modalContent.appendChild(modalHeader);
+
+                // Thêm nội dung đơn hàng
+                const orderList = document.createElement('div');
+                orderList.classList.add('order-list-modal');
+
+                if (allOrdersData && allOrdersData.length > 0) {
+                    allOrdersData.forEach((order, index) => {
+                        const orderItem = document.createElement('div');
+                        orderItem.classList.add('order-item');
+                        orderItem.style.marginBottom = '15px';
+                        orderItem.style.padding = '15px';
+                        orderItem.style.backgroundColor = '#1A1A1A';
+                        orderItem.style.borderRadius = '8px';
+                        orderItem.style.borderLeft = '3px solid #00FFFF';
+
+                        // Tạo header đơn hàng với thông tin và mũi tên
+                        const orderHeader = document.createElement('div');
+                        orderHeader.classList.add('order-header');
+                        orderHeader.style.display = 'flex';
+                        orderHeader.style.justifyContent = 'space-between';
+                        orderHeader.style.alignItems = 'center';
+                        orderHeader.style.cursor = 'pointer';
+                        orderHeader.style.padding = '5px 0';
+
+                        const orderTitle = document.createElement('h4');
+                        orderTitle.textContent = `Đơn ${index + 1}: `;
+                        orderTitle.style.margin = '0';
+                        orderTitle.style.color = '#FF3B30';
+                        orderTitle.style.fontWeight = 'bold';
+
+                        const orderDate = document.createElement('span');
+                        orderDate.textContent = `Ngày đặt: ${formatDate(order.date || order.order_date)}`;
+                        orderDate.style.color = '#E0E0E0';
+                        orderDate.style.marginLeft = '10px';
+
+                        const toggleArrow = document.createElement('div');
+                        toggleArrow.textContent = '▼';
+                        toggleArrow.classList.add('toggle-arrow');
+                        toggleArrow.style.fontSize = '12px';
+                        toggleArrow.style.color = '#00FFFF';
+                        toggleArrow.style.transition = 'transform 0.3s ease';
+
+                        // Tính tổng tiền đơn hàng
+                        let totalOrderAmount = 0;
+                        if (order.items && Array.isArray(order.items)) {
+                            order.items.forEach(item => {
+                                if (item.price && item.quantity) {
+                                    totalOrderAmount += (parseFloat(item.price) * parseFloat(item.quantity));
+                                }
+                            });
+                        }
+
+                        const orderInfo = document.createElement('div');
+                        orderInfo.style.display = 'flex';
+                        orderInfo.style.alignItems = 'center';
+
+                        orderInfo.appendChild(orderTitle);
+                        orderInfo.appendChild(orderDate);
+
+                        // Thêm tổng tiền vào header
+                        const totalDiv = document.createElement('div');
+                        totalDiv.style.marginTop = '10px';
+                        totalDiv.style.fontWeight = 'bold';
+                        totalDiv.style.color = '#00FFFF';
+                        totalDiv.style.fontSize = '0.9em';
+                        totalDiv.innerHTML = `Tổng tiền: <span style="color: #E0E0E0;">${parseInt(totalOrderAmount).toLocaleString('vi-VN')} VND</span>`;
+
+                        orderHeader.appendChild(orderInfo);
+                        orderHeader.appendChild(toggleArrow);
+                        orderItem.appendChild(orderHeader);
+
+                        // Tạo container cho chi tiết đơn hàng
+                        const detailsContainer = document.createElement('div');
+                        detailsContainer.classList.add('order-details-container');
+                        detailsContainer.style.display = 'none';
+                        detailsContainer.style.marginTop = '10px';
+                        detailsContainer.style.paddingTop = '10px';
+                        detailsContainer.style.borderTop = '1px dashed #333';
+                        detailsContainer.style.backgroundColor = '#121212';
+                        detailsContainer.style.borderRadius = '4px';
+                        detailsContainer.style.padding = '10px';
+
+                        // Thêm tổng tiền vào đầu container chi tiết
+                        detailsContainer.appendChild(totalDiv.cloneNode(true));
+
+                        // Thêm sự kiện click để đóng/mở chi tiết
+                        orderHeader.addEventListener('click', function () {
+                            if (detailsContainer.style.display === 'none') {
+                                detailsContainer.style.display = 'block';
+                                toggleArrow.style.transform = 'rotate(180deg)';
+                            } else {
+                                detailsContainer.style.display = 'none';
+                                toggleArrow.style.transform = 'rotate(0deg)';
+                            }
+                        });
+
+                        if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+                            order.items.forEach(item => {
+                                const orderDetail = document.createElement('div');
+                                orderDetail.classList.add('order-detail');
+                                orderDetail.style.padding = '10px';
+                                orderDetail.style.marginBottom = '8px';
+                                orderDetail.style.backgroundColor = '#1A1A1A';
+                                orderDetail.style.borderRadius = '4px';
+                                orderDetail.style.borderTop = '1px dashed #333';
+
+                                // Hiển thị tên sản phẩm nếu có
+                                if (item.product_name) {
+                                    const productName = document.createElement('div');
+                                    productName.style.marginBottom = '5px';
+                                    productName.innerHTML = `<span style="color: #FF6B6B; font-weight: bold;">Sản phẩm:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.product_name}</span>`;
+                                    orderDetail.appendChild(productName);
+                                }
+
+                                // Hiển thị tên variant nếu có, nếu không thì hiển thị variant ID
+                                if (item.variant_name) {
+                                    const variantName = document.createElement('div');
+                                    variantName.style.marginBottom = '5px';
+                                    variantName.innerHTML = `<span style="color: #FF6B6B; font-weight: bold;">Loại:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.variant_name}</span>`;
+                                    orderDetail.appendChild(variantName);
+                                } else {
+                                    const variantId = document.createElement('div');
+                                    variantId.style.marginBottom = '5px';
+                                    variantId.innerHTML = `<span style="color: #FF6B6B; font-weight: bold;">Variant ID:</span> <span style="color: #E0E0E0; font-weight: bold;">${item.variant_id || 'N/A'}</span>`;
+                                    orderDetail.appendChild(variantId);
+                                }
+
+                                // Hiển thị số lượng
+                                const quantity = document.createElement('div');
+                                quantity.style.marginBottom = '5px';
+                                quantity.innerHTML = `<span style="color: #00FFFF;">Số lượng:</span> <span style="color: #E0E0E0;">${item.quantity || 0}</span>`;
+                                orderDetail.appendChild(quantity);
+
+                                // Hiển thị giá nếu có
+                                if (item.price) {
+                                    const price = document.createElement('div');
+                                    price.style.marginBottom = '5px';
+                                    price.innerHTML = `<span style="color: #00FFFF;">Giá:</span> <span style="color: #E0E0E0;">${parseInt(item.price).toLocaleString('vi-VN')} VND</span>`;
+                                    orderDetail.appendChild(price);
+
+                                    // Hiển thị thành tiền
+                                    const subtotal = document.createElement('div');
+                                    subtotal.style.marginBottom = '5px';
+                                    const subtotalAmount = parseFloat(item.price) * parseFloat(item.quantity || 0);
+                                    subtotal.innerHTML = `<span style="color: #00FFFF;">Thành tiền:</span> <span style="color: #E0E0E0;">${parseInt(subtotalAmount).toLocaleString('vi-VN')} VND</span>`;
+                                    orderDetail.appendChild(subtotal);
+                                }
+
+                                // Hiển thị đánh giá
+                                const rating = document.createElement('div');
+                                rating.style.marginBottom = '5px';
+                                rating.innerHTML = `<span style="color: #00FFFF;">Đánh giá:</span> <span style="color: #E0E0E0;">${item.rate || 0} ⭐</span>`;
+                                orderDetail.appendChild(rating);
+
+                                detailsContainer.appendChild(orderDetail);
+                            });
+
+                            orderItem.appendChild(detailsContainer);
+                        } else {
+                            const noItems = document.createElement('div');
+                            noItems.classList.add('order-detail');
+                            noItems.style.backgroundColor = '#1A1A1A';
+                            noItems.style.borderRadius = '4px';
+                            noItems.style.padding = '10px';
+                            noItems.style.textAlign = 'center';
+                            noItems.innerHTML = '<div class="product-info" style="color: #E0E0E0; font-style: italic;">Không có thông tin chi tiết sản phẩm</div>';
+                            detailsContainer.appendChild(noItems);
+                            orderItem.appendChild(detailsContainer);
+                        }
+
+                        orderList.appendChild(orderItem);
+                    });
+                } else {
+                    const noOrders = document.createElement('div');
+                    noOrders.textContent = 'Không có đơn hàng nào';
+                    noOrders.style.textAlign = 'center';
+                    noOrders.style.padding = '20px';
+                    noOrders.style.color = '#E0E0E0';
+                    noOrders.style.fontStyle = 'italic';
+                    orderList.appendChild(noOrders);
+                }
+
+                modalContent.appendChild(orderList);
+                modalOverlay.appendChild(modalContent);
+                document.body.appendChild(modalOverlay);
+            }
+
+            async uploadImage(file) {
+                // Create form data
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('user_id', '{{ session.user_id }}');
+
+                // Show the image in chat
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // Tạo container chứa cả icon và tin nhắn
+                    const containerDiv = document.createElement('div');
+                    containerDiv.classList.add('user-message-container');
+
+                    // Tạo icon người dùng
+                    const iconDiv = document.createElement('div');
+                    iconDiv.classList.add('user-icon-message');
+                    iconDiv.innerHTML = '👤';
+
+                    // Tạo tin nhắn người dùng với hình ảnh
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message', 'user-message', 'image-message');
+
+                    const imgContainer = document.createElement('div');
+                    imgContainer.classList.add('image-container');
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Uploaded Image';
+                    img.style.maxWidth = '100%';
+                    img.style.borderRadius = '10px';
+
+                    imgContainer.appendChild(img);
+                    messageDiv.appendChild(imgContainer);
+                    messageDiv.appendChild(document.createTextNode('Đã gửi hình ảnh'));
+
+                    // Thêm tin nhắn và icon vào container
+                    containerDiv.appendChild(messageDiv);
+                    containerDiv.appendChild(iconDiv);
+
+                    // Thêm container vào chat
+                    this.chatMessages.appendChild(containerDiv);
+                    this.scrollToBottom();
+                };
+                reader.readAsDataURL(file);
+
+                // Send to server
+                this.showThinkingIndicator();
+                try {
+                    console.log('Uploading image to server');
+                    console.log('API endpoint: /recommend/api/chat');
+                    console.log('User ID:', '{{ session.user_id }}');
+
+                    const response = await fetch('/recommend/api/chat', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    console.log('Response status:', response.status);
+                    const responseText = await response.text();
+                    console.log('Raw response:', responseText);
+
+                    let data;
+                    try {
+                        data = JSON.parse(responseText);
+                        console.log('Parsed response data:', data);
+                    } catch (parseError) {
+                        console.error('Error parsing response JSON:', parseError);
+                        throw new Error('Invalid JSON response from server');
+                    }
+                    this.removeThinkingIndicator();
+
+                    if (response.ok && data.success) {
+                        // Add the bot response
+                        this.addMessage(data.data.response);
+
+                        // Check if there are products to display
+                        if (data.data.products && data.data.products.length > 0) {
+                            this.displayProductImages(data.data.products);
+                        }
+                    } else {
+                        this.handleError(data.error || new Error('Failed to process image'), '');
+                    }
+                } catch (error) {
+                    this.removeThinkingIndicator();
+                    this.handleError(error, '');
+                }
+            }
+        }
+
+        // Initialize chat manager
+        const chatManager = new ChatManager();
+
+        // Detect page reload and reset session
+        window.addEventListener('load', function () {
+            // Check if this is a page reload (not initial load)
+            if (performance.navigation && performance.navigation.type === 1) {
+                console.log('This is a page reload');
+                // Send signal to backend to reset session
+                fetch('/recommend/api/reset-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'page_reload'
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Session reset response:', data);
+                        if (data.success) {
+                            console.log('Session reset successfully');
+                        } else {
+                            console.error('Failed to reset session:', data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error resetting session:', error);
+                    });
+            } else {
+                console.log('This is an initial page load, not a reload');
+            }
+        });
+    </script>
+
+    <script>
+        // Hàm để đóng/mở chi tiết đơn hàng đã được định nghĩa ở trên
+
+        // Hàm định dạng số tiền theo chuẩn Việt Nam (dấu chấm mỗi 3 số)
+        function formatCurrency(amount) {
+            return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // Hàm để tính tổng tiền cho mỗi đơn hàng
+        document.addEventListener('DOMContentLoaded', function () {
+            // Định dạng giá sản phẩm
+            const priceElements = document.querySelectorAll('.formatted-price');
+            priceElements.forEach(function (element) {
+                const price = parseFloat(element.getAttribute('data-price'));
+                if (!isNaN(price)) {
+                    element.textContent = `${formatCurrency(price)} VND`;
+                }
+            });
+
+            // Lấy tất cả các đơn hàng
+            const orderItems = document.querySelectorAll('.order-item');
+
+            orderItems.forEach(function (orderItem) {
+                // Lấy tất cả các sản phẩm trong đơn hàng
+                const productDetails = orderItem.querySelectorAll('.order-detail');
+                let totalPrice = 0;
+
+                // Tính tổng tiền cho mỗi đơn hàng
+                productDetails.forEach(function (detail) {
+                    try {
+                        // Lấy giá từ thuộc tính data-price thay vì từ text
+                        const priceElement = detail.querySelector('.product-price span:last-child');
+                        const price = priceElement && priceElement.hasAttribute('data-price')
+                            ? parseFloat(priceElement.getAttribute('data-price'))
+                            : 0;
+
+                        // Lấy số lượng
+                        const quantityText = detail.querySelector('.product-quantity').textContent;
+                        const quantityMatch = quantityText.match(/(\d+)/);
+                        const quantity = quantityMatch ? parseInt(quantityMatch[0]) : 0;
+
+                        console.log(`Product: ${detail.querySelector('.product-name').textContent}`);
+                        console.log(`Price: ${price}`);
+                        console.log(`Quantity text: ${quantityText}, extracted: ${quantity}`);
+
+                        // Tính thành tiền và cộng vào tổng
+                        const itemTotal = price * quantity;
+                        totalPrice += itemTotal;
+
+                        console.log(`Item total: ${itemTotal}, Running total: ${totalPrice}`);
+
+                        // Cập nhật thành tiền cho sản phẩm
+                        const totalElement = detail.querySelector('.product-total span:last-child');
+                        if (totalElement) {
+                            totalElement.textContent = `${formatCurrency(itemTotal)} VND`;
+                        }
+                    } catch (error) {
+                        console.error('Error calculating item total:', error);
+                    }
+                });
+
+                // Sử dụng hàm formatCurrency đã định nghĩa ở trên
+
+                // Cập nhật tổng tiền cho đơn hàng
+                const orderTotal = orderItem.querySelector('.order-total');
+                if (orderTotal) {
+                    const totalElement = orderTotal.querySelector('.order-total-price span:last-child');
+                    if (totalElement) {
+                        totalElement.textContent = `${formatCurrency(totalPrice)} VND`;
+                        console.log(`Order total updated to: ${formatCurrency(totalPrice)} VND`);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+
+const status = 'Added'; // Corrected line

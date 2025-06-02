@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác thực khuôn mặt - Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Include Socket.IO client library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .auth-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            color: #7f8c8d;
+            font-weight: normal;
+            margin-bottom: 25px;
+        }
+
+        /* Style for the video container to position canvas on top */
+        .video-container {
+            position: relative;
+            /* Needed for absolute positioning of canvas */
+            width: 320px;
+            /* Match video width */
+            height: 240px;
+            /* Match video height */
+            margin: 15px auto;
+            /* Center the container */
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            transform: scaleX(-1);
+        }
+
+        #video {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+            /* Mirror the video */
+        }
+
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        .countdown {
+            font-size: 1.5rem;
+            color: #facc15;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        .warning {
+            color: #ffc107;
+        }
+
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .primary-btn {
+            background-color: #3498db;
+        }
+
+        .secondary-btn {
+            background-color: #95a5a6;
+        }
+
+        .benefits-list {
+            text-align: left;
+            margin: 20px auto;
+            max-width: 80%;
+            padding-left: 20px;
+        }
+
+        .benefits-list li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container" id="welcome-container">
+        <h1>👋 Xin chào!</h1>
+        <h3>Tôi là trợ lý ảo của [Tên Doanh Nghiệp]</h3>
+        <p>Để giúp bạn dễ dàng mua sắm và nhận ưu đãi phù hợp, bạn có muốn xác minh danh tính không?</p>
+
+        <div class="button-group">
+            <button id="verify-now-btn" class="btn primary-btn">✅ Xác minh ngay</button>
+            <button id="verify-later-btn" class="btn secondary-btn">⏩ Để sau</button>
+        </div>
+    </div>
+
+    <div class="auth-container hidden" id="benefits-container">
+        <h1>🛍️ Khi bạn xác minh, bạn sẽ:</h1>
+        <ul class="benefits-list">
+            <li>Nhận đề xuất sản phẩm chính xác hơn</li>
+            <li>Xem lại lịch sử mua hàng</li>
+            <li>Được cá nhân hóa ưu đãi</li>
+        </ul>
+        <p>📷 Vui lòng cho phép truy cập camera để xác minh khuôn mặt.</p>
+
+        <div class="button-group">
+            <button id="continue-btn" class="btn primary-btn">Tiếp tục</button>
+            <button id="back-btn" class="btn secondary-btn">Quay lại</button>
+        </div>
+    </div>
+
+    <div class="auth-container hidden" id="verification-container">
+        <h1>🤖 Chatbot</h1>
+        <h3>👤 Vui lòng nhìn thẳng vào camera</h3>
+
+        <!-- Container for video and canvas overlay -->
+        <div class="countdown" id="countdown"></div>
+        <div class="video-container">
+            <video id="video" width="320" height="240" autoplay playsinline></video>
+            <canvas id="video-overlay" width="320" height="240"></canvas>
+        </div>
+
+        <!-- Hidden canvas for frame capture -->
+        <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+        <p id="status">Hãy giữ khuôn mặt bạn trong khung hình, nhìn thẳng và không đeo khẩu trang.</p>
+
+        <!-- Manual authentication button and form (hidden by default) -->
+        <div id="manual-auth-container" class="hidden">
+            <button id="manual-auth-btn" class="btn">Xác thực thủ công</button>
+
+            <!-- Manual authentication form (hidden initially) -->
+            <div id="manual-auth-form" class="hidden" style="margin-top: 20px;">
+                <input type="text" id="customer-id-input" placeholder="Nhập ID khách hàng"
+                    style="padding: 10px; width: 100%; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                <button id="submit-id-btn" class="btn">Xác nhận</button>
+                <p id="manual-auth-status" class="hidden" style="margin-top: 10px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize DOM elements
+        const verifyNowBtn = document.getElementById('verify-now-btn');
+        const verifyLaterBtn = document.getElementById('verify-later-btn');
+        const continueBtn = document.getElementById('continue-btn');
+        const backBtn = document.getElementById('back-btn');
+        const welcomeContainer = document.getElementById('welcome-container');
+        const benefitsContainer = document.getElementById('benefits-container');
+        const verificationContainer = document.getElementById('verification-container');
+        const statusElement = document.getElementById('status');
+        const countdownElement = document.getElementById('countdown');
+
+        const video = document.getElementById('video');
+        const captureCanvas = document.getElementById('canvas'); // For sending frames
+        const captureContext = captureCanvas.getContext('2d', { willReadFrequently: true });
+        const overlayCanvas = document.getElementById('video-overlay'); // For drawing bbox
+        const overlayContext = overlayCanvas.getContext('2d', { willReadFrequently: true });
+        const manualAuthBtn = document.getElementById('manual-auth-btn');
+        const manualAuthContainer = document.getElementById('manual-auth-container');
+        const manualAuthForm = document.getElementById('manual-auth-form');
+        const customerIdInput = document.getElementById('customer-id-input');
+        const submitIdBtn = document.getElementById('submit-id-btn');
+        const manualAuthStatus = document.getElementById('manual-auth-status');
+
+        let stream = null;
+        let frameInterval = null;
+        let authAttempts = 0;
+        let autoGuestTimer = null; // Timer cho chế độ ẩn danh tự động
+        let consecutiveFailures = 0; // Đếm số lần thất bại liên tiếp
+        const MAX_AUTH_ATTEMPTS = 5;
+        const AUTO_GUEST_TIMEOUT = 15000; // 15 giây theo yêu cầu
+        const MAX_CONSECUTIVE_FAILURES = 10;
+        const FACE_DETECTION_INTERVAL = 250; // Giảm interval xuống 250ms để phản ứng nhanh hơn
+
+        // Cấu hình kích thước video
+        const VIDEO_WIDTH = 320;  // Giảm xuống 320
+        const VIDEO_HEIGHT = 240; // Giảm xuống 240
+        const PROCESSING_WIDTH = 320;  // Giảm xuống 320
+        const PROCESSING_HEIGHT = 240; // Giảm xuống 240
+
+        let socket;
+        let isSocketConnected = false;
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT_ATTEMPTS = 5;
+
+        // Initialize Socket.IO connection
+        function initializeSocket() {
+            console.log('Initializing Socket.IO connection...');
+            socket = io({
+                transports: ['websocket'],
+                reconnection: true,
+                reconnectionAttempts: MAX_RECONNECT_ATTEMPTS,
+                reconnectionDelay: 1000
+            });
+
+            socket.on('connect', () => {
+                console.log('Socket.IO connected successfully');
+                isSocketConnected = true;
+                reconnectAttempts = 0;
+                statusElement.textContent = 'Đã kết nối. Đang chờ nhận diện...';
+                statusElement.className = '';
+            });
+
+            socket.on('disconnect', (reason) => {
+                console.log('Socket.IO disconnected:', reason);
+                isSocketConnected = false;
+                statusElement.textContent = 'Mất kết nối. Đang thử kết nối lại...';
+                statusElement.className = 'warning';
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('Socket.IO connection error:', error);
+                reconnectAttempts++;
+                if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+                    console.error('Max reconnection attempts reached');
+                    statusElement.textContent = 'Không thể kết nối. Vui lòng thử lại sau.';
+                    statusElement.className = 'error';
+                    stopCameraAndProcessing();
+                    showManualAuthButton();
+                }
+            });
+
+            socket.on('face_verification_result', (data) => {
+                console.log('Face verification result received:', data);
+                if (data.success) {
+                    statusElement.textContent = 'Đã nhận diện khuôn mặt. Đang xác thực...';
+                    statusElement.className = 'success';
+
+                    // Stop camera and frame sending immediately upon success
+                    stopCameraAndProcessing();
+                    clearOverlay();
+
+                    // Handle successful face detection
+                    if (data.user_info) {
+                        drawBoundingBox(data.bbox, data.confidence, true);
+                        confirmAuthentication(data.user_info, data.customer_details);
+                    } else if (data.faces && data.faces[0] && data.faces[0].customer_info) {
+                        // Draw bounding box for recognized face
+                        const face = data.faces[0];
+                        drawBoundingBox(face.bbox, face.detection_confidence, true);
+                        confirmAuthentication(face.customer_info, face.customer_info);
+                    }
+                } else {
+                    console.log('Face verification failed:', data.error);
+                    if (data.faces && data.faces[0]) {
+                        // Draw bounding box for detected face
+                        const face = data.faces[0];
+                        drawBoundingBox(face.bbox, face.detection_confidence, false);
+                        statusElement.textContent = 'Đã phát hiện khuôn mặt nhưng không nhận diện được. Vui lòng thử lại.';
+                    } else {
+                        statusElement.textContent = 'Không phát hiện được khuôn mặt. Vui lòng thử lại.';
+                    }
+                    statusElement.className = 'warning';
+                }
+            });
+
+            socket.on('error', (error) => {
+                console.error('Socket.IO error:', error);
+                statusElement.textContent = 'Lỗi kết nối. Vui lòng thử lại.';
+                statusElement.className = 'error';
+            });
+        }
+
+        // Event listeners for multi-step verification flow
+        if (verifyNowBtn) {
+            verifyNowBtn.addEventListener('click', () => {
+                console.log('Verify now button clicked');
+                welcomeContainer.classList.add('hidden');
+                benefitsContainer.classList.remove('hidden');
+            });
+        }
+
+        if (verifyLaterBtn) {
+            verifyLaterBtn.addEventListener('click', () => {
+                console.log('Verify later button clicked');
+                // Đăng nhập với tư cách khách
+                confirmGuestAuthentication();
+            });
+        }
+
+        if (continueBtn) {
+            continueBtn.addEventListener('click', () => {
+                console.log('Continue button clicked');
+                benefitsContainer.classList.add('hidden');
+                verificationContainer.classList.remove('hidden');
+                // Initialize camera and Socket.IO connection
+                initializeVerification();
+            });
+        }
+
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                console.log('Back button clicked');
+                benefitsContainer.classList.add('hidden');
+                welcomeContainer.classList.remove('hidden');
+            });
+        }
+
+        // Function to initialize verification process
+        function initializeVerification() {
+            // Initialize Socket.IO connection if not already connected
+            if (!socket.connected) {
+                socket.connect();
+            } else {
+                startCamera();
+            }
+
+            // Bắt đầu đếm ngược 15 giây
+            startAutoGuestTimer();
+        }
+
+        // Function to start auto guest timer
+        function startAutoGuestTimer() {
+            const countdownElement = document.getElementById('countdown');
+            let timeLeft = AUTO_GUEST_TIMEOUT / 1000;
+
+            // Clear any existing timer
+            if (autoGuestTimer) {
+                clearTimeout(autoGuestTimer);
+            }
+
+            // Update countdown display
+            countdownElement.textContent = timeLeft;
+
+            // Set new timer for auto guest mode
+            autoGuestTimer = setTimeout(() => {
+                console.log('Auto guest timeout reached');
+                statusElement.textContent = 'Không xác minh được sau 15 giây. Chuyển sang chế độ chat ẩn danh...';
+                statusElement.className = 'warning';
+                countdownElement.textContent = '';
+
+                // Đảm bảo dừng camera và xóa overlay trước khi chuyển trang
+                stopCameraAndProcessing();
+                clearOverlay();
+
+                // Gọi hàm xác thực khách
+                confirmGuestAuthentication();
+            }, AUTO_GUEST_TIMEOUT);
+
+            // Start countdown timer
+            const countdownTimer = setInterval(() => {
+                timeLeft--;
+                countdownElement.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownTimer);
+                }
+            }, 1000);
+
+            // Hiển thị thời gian còn lại
+            const statusInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(statusInterval);
+                } else {
+                    statusElement.textContent = `Đang chờ xác minh... (${timeLeft}s)`;
+                }
+            }, 1000);
+        }
+
+        // Function to stop auto guest timer
+        function stopAutoGuestTimer() {
+            if (autoGuestTimer) {
+                clearTimeout(autoGuestTimer);
+                autoGuestTimer = null;
+            }
+        }
+
+        // Call initializeSocket when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSocket();
+            // ... existing code ...
+        });
+
+        function drawBoundingBox(bbox, confidence, isSuccess) {
+            overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height); // Clear previous drawings first
+
+            // Validate bbox is iterable
+            if (!bbox || typeof bbox[Symbol.iterator] !== 'function') {
+                console.warn('Invalid bbox, expected iterable but got:', bbox);
+                return;
+            }
+
+            // Improved color scheme và styling
+            const color = isSuccess ? '#28a745' : (confidence > 0.5 ? '#ffc107' : '#dc3545'); // Green/Yellow/Red based on status
+            overlayContext.strokeStyle = color;
+            overlayContext.lineWidth = 3;
+            overlayContext.font = 'bold 16px Arial';
+            overlayContext.fillStyle = color;
+
+            const [x1, y1, x2, y2] = bbox;
+            const width = x2 - x1;
+            const height = y2 - y1;
+
+            // Validate bounding box coordinates
+            if (width <= 0 || height <= 0) {
+                console.warn('Invalid bounding box dimensions:', bbox);
+                return;
+            }
+
+            // Vẽ bounding box với góc bo tròn
+            overlayContext.beginPath();
+            if (overlayContext.roundRect) {
+                overlayContext.roundRect(x1, y1, width, height, 8);
+            } else {
+                // Fallback for browsers without roundRect support
+                overlayContext.rect(x1, y1, width, height);
+            }
+            overlayContext.stroke();
+
+            // Vẽ các góc để làm nổi bật với improved styling
+            const cornerLength = Math.min(20, width * 0.2, height * 0.2); // Adaptive corner length
+            overlayContext.lineWidth = 4;
+
+            // Góc trên trái
+            overlayContext.beginPath();
+            overlayContext.moveTo(x1, y1 + cornerLength);
+            overlayContext.lineTo(x1, y1);
+            overlayContext.lineTo(x1 + cornerLength, y1);
+            overlayContext.stroke();
+
+            // Góc trên phải
+            overlayContext.beginPath();
+            overlayContext.moveTo(x2 - cornerLength, y1);
+            overlayContext.lineTo(x2, y1);
+            overlayContext.lineTo(x2, y1 + cornerLength);
+            overlayContext.stroke();
+
+            // Góc dưới trái
+            overlayContext.beginPath();
+            overlayContext.moveTo(x1, y2 - cornerLength);
+            overlayContext.lineTo(x1, y2);
+            overlayContext.lineTo(x1 + cornerLength, y2);
+            overlayContext.stroke();
+
+            // Góc dưới phải
+            overlayContext.beginPath();
+            overlayContext.moveTo(x2 - cornerLength, y2);
+            overlayContext.lineTo(x2, y2);
+            overlayContext.lineTo(x2, y2 - cornerLength);
+            overlayContext.stroke();
+
+            // Improved confidence score và status display
+            if (confidence !== null && confidence !== undefined) {
+                const confText = `${(confidence * 100).toFixed(1)}%`; // Show 1 decimal place
+                const statusText = isSuccess ? 'NHẬN DIỆN' : (confidence > 0.5 ? 'PHÁT HIỆN' : 'THẤP');
+                const textY = y1 > 50 ? y1 - 15 : y2 + 30; // Better positioning
+
+                // Measure text dimensions for better background sizing
+                overlayContext.font = 'bold 14px Arial';
+                const confTextWidth = overlayContext.measureText(confText).width;
+                const statusTextWidth = overlayContext.measureText(statusText).width;
+                const maxTextWidth = Math.max(confTextWidth, statusTextWidth);
+                const textWidth = maxTextWidth + 16; // Add padding
+                const textHeight = 45;
+
+                // Vẽ improved background với rounded corners
+                overlayContext.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                overlayContext.beginPath();
+                if (overlayContext.roundRect) {
+                    overlayContext.roundRect(x1, textY - textHeight + 5, textWidth, textHeight, 6);
+                } else {
+                    overlayContext.rect(x1, textY - textHeight + 5, textWidth, textHeight);
+                }
+                overlayContext.fill();
+
+                // Draw text without flipping (simpler approach)
+                overlayContext.fillStyle = color;
+                overlayContext.textAlign = 'left';
+                overlayContext.font = 'bold 14px Arial';
+
+                // Draw status text
+                overlayContext.fillText(statusText, x1 + 8, textY - 20);
+
+                // Draw confidence with different styling based on value
+                const confColor = confidence > 0.7 ? '#28a745' : (confidence > 0.4 ? '#ffc107' : '#dc3545');
+                overlayContext.fillStyle = confColor;
+                overlayContext.fillText(confText, x1 + 8, textY - 5);
+
+                // Add small indicator dot
+                overlayContext.beginPath();
+                overlayContext.arc(x1 + textWidth - 12, textY - 12, 4, 0, 2 * Math.PI);
+                overlayContext.fill();
+            }
+        }
+
+        function scaleBoundingBox(bbox, fromWidth, fromHeight, toWidth, toHeight) {
+            const [x1, y1, x2, y2] = bbox;
+
+            // Improved scaling với validation
+            if (fromWidth <= 0 || fromHeight <= 0 || toWidth <= 0 || toHeight <= 0) {
+                console.warn('Invalid scaling dimensions:', { fromWidth, fromHeight, toWidth, toHeight });
+                return bbox; // Return original if invalid
+            }
+
+            const scaleX = toWidth / fromWidth;
+            const scaleY = toHeight / fromHeight;
+
+            // Scale và clamp coordinates để đảm bảo trong bounds
+            const scaledX1 = Math.max(0, Math.round(x1 * scaleX));
+            const scaledY1 = Math.max(0, Math.round(y1 * scaleY));
+            const scaledX2 = Math.min(toWidth, Math.round(x2 * scaleX));
+            const scaledY2 = Math.min(toHeight, Math.round(y2 * scaleY));
+
+            // Validate scaled bounding box
+            if (scaledX2 <= scaledX1 || scaledY2 <= scaledY1) {
+                console.warn('Invalid scaled bounding box:', {
+                    original: bbox,
+                    scaled: [scaledX1, scaledY1, scaledX2, scaledY2],
+                    scales: { scaleX, scaleY }
+                });
+                return bbox; // Return original if invalid
+            }
+
+            return [scaledX1, scaledY1, scaledX2, scaledY2];
+        }
+
+        function clearOverlay() {
+            overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+        }
+
+        async function confirmGuestAuthentication() {
+            try {
+                // Kiểm tra thời gian từ lần xác thực cuối
+                const lastAuthAttempt = sessionStorage.getItem('lastAuthAttempt');
+                const now = Date.now();
+
+                if (lastAuthAttempt) {
+                    const timeSinceLastAttempt = now - parseInt(lastAuthAttempt);
+                    if (timeSinceLastAttempt < AUTO_GUEST_TIMEOUT) {
+                        const waitTime = Math.ceil((AUTO_GUEST_TIMEOUT - timeSinceLastAttempt) / 1000);
+                        const guestMessage = document.createElement('p');
+                        guestMessage.textContent = `Vui lòng thử xác thực khuôn mặt trước (${waitTime}s)`;
+                        guestMessage.className = 'warning';
+                        welcomeContainer.appendChild(guestMessage);
+                        return;
+                    }
+                }
+
+                // Hiển thị thông báo
+                const guestMessage = document.createElement('p');
+                guestMessage.textContent = 'Đang đăng nhập với tư cách khách...';
+                guestMessage.className = 'success';
+                welcomeContainer.appendChild(guestMessage);
+
+                // Thêm CSRF token nếu cần
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                const response = await fetch('/customer/face-auth/confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        is_guest: true,
+                        auto_guest: true,
+                        timestamp: now,
+                        last_auth_attempt: lastAuthAttempt
+                    })
+                });
+
+                let result;
+                try {
+                    result = await response.json();
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    throw new Error('Không thể xử lý phản hồi từ server');
+                }
+
+                console.log('Guest auth response:', result);
+
+                if (response.ok && result.success) {
+                    console.log('Guest session confirmed by server:', result);
+                    guestMessage.textContent = 'Đăng nhập thành công. Đang chuyển hướng...';
+
+                    // Đảm bảo dừng camera và xóa overlay trước khi chuyển trang
+                    stopCameraAndProcessing();
+                    clearOverlay();
+
+                    // Tăng thời gian chờ để đảm bảo session được lưu
+                    setTimeout(() => {
+                        const redirectUrl = result.redirect || '/recommend/chat';
+                        console.log('Redirecting to:', redirectUrl);
+                        const cacheBuster = `?t=${Date.now()}`;
+                        window.location.href = redirectUrl + cacheBuster;
+                    }, 2000);
+                } else {
+                    if (result.error === 'Vui lòng thử xác thực khuôn mặt trước') {
+                        guestMessage.textContent = `Vui lòng thử xác thực khuôn mặt trước (${Math.ceil(result.wait_time)}s)`;
+                        guestMessage.className = 'warning';
+
+                        // Lưu thời gian xác thực cuối
+                        sessionStorage.setItem('lastAuthAttempt', now.toString());
+
+                        // Thử lại sau khi hết thời gian chờ
+                        setTimeout(() => {
+                            console.log('Retrying guest authentication...');
+                            confirmGuestAuthentication();
+                        }, result.wait_time * 1000);
+                    } else {
+                        throw new Error(result.message || result.error || 'Xác thực thất bại');
+                    }
+                }
+            } catch (error) {
+                console.error('Error confirming guest auth:', error);
+                const guestMessage = document.createElement('p');
+                guestMessage.textContent = `Lỗi đăng nhập: ${error.message || 'Lỗi không xác định'}`;
+                guestMessage.className = 'error';
+                welcomeContainer.appendChild(guestMessage);
+
+                // Thử lại sau 3 giây nếu lỗi
+                setTimeout(() => {
+                    console.log('Retrying guest authentication...');
+                    confirmGuestAuthentication();
+                }, 3000);
+            }
+        }
+
+        async function confirmAuthentication(userInfo, customerDetails) {
+            try {
+                // Thêm CSRF token nếu cần
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                const response = await fetch('/customer/face-auth/confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    },
+                    credentials: 'include', // Thêm credentials để gửi cookies
+                    body: JSON.stringify({
+                        user_info: userInfo,
+                        customer_details: customerDetails,
+                        timestamp: Date.now() // Thêm timestamp để tránh cache
+                    })
+                });
+
+                let result;
+                try {
+                    result = await response.json();
+                } catch (e) {
+                    console.error('Error parsing response:', e);
+                    throw new Error('Không thể xử lý phản hồi từ server');
+                }
+
+                console.log('Auth response:', result);
+
+                if (response.ok && result.success) {
+                    console.log('Session confirmed by server:', result);
+                    statusElement.textContent = 'Phiên đã xác nhận. Đang chuyển hướng...';
+                    statusElement.className = 'success';
+
+                    // Đảm bảo dừng camera và xóa overlay trước khi chuyển trang
+                    stopCameraAndProcessing();
+                    clearOverlay();
+
+                    // Tăng thời gian chờ để đảm bảo session được lưu
+                    setTimeout(() => {
+                        // Sử dụng đường dẫn từ server hoặc mặc định
+                        const redirectUrl = result.redirect || '/recommend/chat';
+                        console.log('Redirecting to:', redirectUrl);
+
+                        // Thêm cache-busting parameter
+                        const cacheBuster = `?t=${Date.now()}`;
+                        window.location.href = redirectUrl + cacheBuster;
+                    }, 2000); // Tăng thời gian chờ lên 2 giây
+                } else {
+                    throw new Error(result.message || result.error || 'Xác thực thất bại');
+                }
+            } catch (error) {
+                console.error('Error confirming auth:', error);
+                statusElement.textContent = `Lỗi xác nhận phiên: ${error.message || 'Lỗi không xác định'}`;
+                statusElement.className = 'error';
+                showManualAuthButton();
+            }
+        }
+
+        async function startCamera() {
+            if (stream) return;
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: VIDEO_WIDTH },
+                        height: { ideal: VIDEO_HEIGHT },
+                        frameRate: { ideal: 10 }
+                    },
+                    audio: false
+                });
+
+                video.srcObject = stream;
+                statusElement.textContent = 'Đang chờ nhận diện...';
+                statusElement.className = '';
+                startSendingFrames();
+            } catch (err) {
+                console.error("Error accessing camera: ", err);
+                statusElement.textContent = 'Lỗi: Không thể truy cập camera.';
+                statusElement.className = 'error';
+                stopCameraAndProcessing();
+                showManualAuthButton();
+            }
+        }
+
+        function startSendingFrames() {
+            if (frameInterval) clearInterval(frameInterval);
+            if (!isSocketConnected) {
+                console.error('Cannot start sending frames: Socket not connected');
+                return;
+            }
+
+            let consecutiveErrors = 0;
+            const MAX_CONSECUTIVE_ERRORS = 5;
+            let lastFrameTime = Date.now();
+            const MIN_FRAME_INTERVAL = 500; // 500ms between frames
+            let isProcessing = false;
+
+            frameInterval = setInterval(() => {
+                const now = Date.now();
+                if (now - lastFrameTime < MIN_FRAME_INTERVAL || isProcessing) {
+                    return;
+                }
+                lastFrameTime = now;
+                isProcessing = true;
+
+                if (!stream || video.readyState < video.HAVE_ENOUGH_DATA || !isSocketConnected) {
+                    isProcessing = false;
+                    return;
+                }
+
+                try {
+                    // Ensure canvas size matches video
+                    if (captureCanvas.width !== VIDEO_WIDTH || captureCanvas.height !== VIDEO_HEIGHT) {
+                        captureCanvas.width = VIDEO_WIDTH;
+                        captureCanvas.height = VIDEO_HEIGHT;
+                    }
+
+                    // Draw video frame to canvas
+                    captureContext.drawImage(video, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+
+                    // Get image data for face detection
+                    const imageData = captureContext.getImageData(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+                    const hasFace = detectFaceInFrame(imageData);
+
+                    if (!hasFace) {
+                        consecutiveErrors++;
+                        if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+                            console.log('⚠️ No face detected for too long, switching to guest mode');
+                            stopCameraAndProcessing();
+                            clearOverlay();
+                            confirmGuestAuthentication();
+                            return;
+                        }
+                        isProcessing = false;
+                        return;
+                    }
+
+                    // Reset error counter if face is detected
+                    consecutiveErrors = 0;
+
+                    // Convert to JPEG with higher quality
+                    const imageDataUrl = captureCanvas.toDataURL('image/jpeg', 0.9);
+
+                    // Send frame with metadata
+                    socket.emit('video_frame', {
+                        image: imageDataUrl,
+                        timestamp: Date.now(),
+                        width: VIDEO_WIDTH,
+                        height: VIDEO_HEIGHT,
+                        has_face: true
+                    }, (response) => {
+                        isProcessing = false;
+                        if (response && response.error) {
+                            console.error('❌ Error sending frame:', response.error);
+                        } else {
+                            console.log('✅ Frame sent successfully');
+                        }
+                    });
+                } catch (error) {
+                    console.error("❌ Error capturing/sending frame:", error);
+                    consecutiveErrors++;
+                    isProcessing = false;
+                    if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+                        console.log('⚠️ Too many consecutive errors, switching to guest mode');
+                        stopCameraAndProcessing();
+                        clearOverlay();
+                        confirmGuestAuthentication();
+                    }
+                }
+            }, MIN_FRAME_INTERVAL);
+        }
+
+        // Improved face detection function
+        function detectFaceInFrame(imageData) {
+            // Temporarily disable client-side face detection to send all frames to server
+            console.log('🔍 Client-side face detection disabled, sending all frames to server.');
+            return true;
+        }
+
+        function stopCameraAndProcessing() {
+            console.log("Stopping camera and frame sending.");
+
+            if (frameInterval) {
+                clearInterval(frameInterval);
+                frameInterval = null;
+            }
+
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+                video.srcObject = null;
+            }
+
+            // Dừng timer khi dừng camera
+            stopAutoGuestTimer();
+        }
+
+        function showManualAuthButton() {
+            manualAuthContainer.classList.remove('hidden');
+
+            // Add click event listener if not already added
+            if (!manualAuthBtn.hasAttribute('data-listener-added')) {
+                manualAuthBtn.addEventListener('click', () => {
+                    // Hiển thị form nhập ID
+                    manualAuthForm.classList.remove('hidden');
+                    manualAuthBtn.classList.add('hidden');
+                });
+                manualAuthBtn.setAttribute('data-listener-added', 'true');
+            }
+
+            // Add event listener for submit button
+            if (!submitIdBtn.hasAttribute('data-listener-added')) {
+                submitIdBtn.addEventListener('click', async () => {
+                    const customerId = customerIdInput.value.trim();
+
+                    if (!customerId) {
+                        manualAuthStatus.textContent = 'Vui lòng nhập ID khách hàng';
+                        manualAuthStatus.className = 'error';
+                        manualAuthStatus.classList.remove('hidden');
+                        return;
+                    }
+
+                    // Hiển thị trạng thái đang xử lý
+                    manualAuthStatus.textContent = 'Đang xác thực...';
+                    manualAuthStatus.className = 'warning';
+                    manualAuthStatus.classList.remove('hidden');
+                    submitIdBtn.disabled = true;
+
+                    try {
+                        // Gửi yêu cầu xác thực thủ công
+                        const response = await fetch('/customer/manual-auth', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ customer_id: customerId })
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok && result.success) {
+                            // Xác thực thành công
+                            manualAuthStatus.textContent = `Xác thực thành công! Chào ${result.customer_name}! Đang chuyển hướng...`;
+                            manualAuthStatus.className = 'success';
+
+                            // Xác nhận phiên đăng nhập
+                            const userInfo = {
+                                id: result.customer_id,
+                                name: result.customer_name
+                            };
+
+                            await confirmAuthentication(userInfo);
+                        } else {
+                            // Xác thực thất bại
+                            manualAuthStatus.textContent = result.message || 'Không tìm thấy khách hàng với ID này';
+                            manualAuthStatus.className = 'error';
+                            submitIdBtn.disabled = false;
+                        }
+                    } catch (error) {
+                        console.error('Error during manual authentication:', error);
+                        manualAuthStatus.textContent = 'Lỗi kết nối khi xác thực';
+                        manualAuthStatus.className = 'error';
+                        submitIdBtn.disabled = false;
+                    }
+                });
+                submitIdBtn.setAttribute('data-listener-added', 'true');
+            }
+        }
+
+        // Clean up resources when page is unloaded
+        window.addEventListener('beforeunload', stopCameraAndProcessing);
+    </script>
+</body>
+
+</html>
