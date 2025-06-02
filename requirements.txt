@@ -1,0 +1,42 @@
+# Flask và các extension
+Flask==2.0.1
+Flask-Login==0.5.0
+Flask-WTF==0.15.1
+
+# Database
+neo4j>=5.28.0
+
+# Environment và config
+python-dotenv==1.0.0
+PyYAML==5.4.1
+
+# AI/ML related
+google-generativeai>=0.3.0        # API chính thức của Google Gemini
+langchain>=0.1.0                  # Framework cho LLM applications
+langchain-google-genai>=0.0.5     # Tích hợp Gemini với LangChain
+langchain-community>=0.0.10       # Các components cộng đồng cho LangChain
+langgraph>=0.0.20                 # Framework cho state machines dựa trên LLM
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Face Recognition
+insightface>=0.7.3                # Thư viện nhận diện khuôn mặt
+opencv-python>=4.8.0              # Xử lý hình ảnh
+
+# Image processing
+Pillow>=10.0.0
+
+# Security
+python-jose>=3.3.0
+passlib>=1.7.4
+bcrypt>=4.0.1
+
+# Utils
+requests>=2.31.0
+python-dateutil>=2.8.2
+tqdm>=4.66.1                      # Progress bars
+
+# Đã loại bỏ các thư viện cho SQL Agent
+
+# Thư viện cho scheduling
+APScheduler==3.10.1
