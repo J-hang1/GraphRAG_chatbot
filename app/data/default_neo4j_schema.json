@@ -1,0 +1,1025 @@
+{
+  "nodes": {
+    "product": {
+      "description": "Sản phẩm (đồ uống) trong cửa hàng",
+      "count": 30,
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "ID của sản phẩm"
+        },
+        "name_product": {
+          "type": "str",
+          "description": "Tên sản phẩm"
+        },
+        "descriptions": {
+          "type": "str",
+          "description": "Mô tả chi tiết về sản phẩm"
+        },
+        "categories_id": {
+          "type": "int",
+          "description": "ID của danh mục mà sản phẩm thuộc về"
+        },
+        "link_image": {
+          "type": "str",
+          "description": "Đường dẫn đến hình ảnh sản phẩm"
+        },
+        "name": {
+          "type": "str",
+          "description": "Tên sản phẩm (trường bổ sung)"
+        }
+      },
+      "examples": [
+        "Caramel Frappuccino",
+        "Caffè Latte",
+        "White Chocolate Mocha",
+        "Tazo Chai Tea Latte",
+        "Strawberries & Crème"
+      ]
+    },
+    "categories": {
+      "description": "Danh mục sản phẩm",
+      "count": 9,
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "ID của danh mục"
+        },
+        "name_cat": {
+          "type": "str",
+          "description": "Tên danh mục"
+        },
+        "description": {
+          "type": "str",
+          "description": "Mô tả chi tiết về danh mục"
+        }
+      },
+      "examples": [
+        "Classic Espresso Drinks",
+        "Frappuccino® Blended Beverages",
+        "Tazo® Tea Drinks",
+        "Smoothies"
+      ]
+    },
+    "variant": {
+      "description": "Biến thể của sản phẩm (kích cỡ, hương vị...)",
+      "count": 202,
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "ID của biến thể"
+        },
+        "product_id": {
+          "type": "int",
+          "description": "ID của sản phẩm mà biến thể thuộc về"
+        },
+        "Beverage_Option": {
+          "type": "str",
+          "description": "Tùy chọn đồ uống"
+        },
+        "calories": {
+          "type": "float",
+          "description": "Lượng calo"
+        },
+        "sugars_g": {
+          "type": "float",
+          "description": "Lượng đường (g)"
+        },
+        "protein_g": {
+          "type": "float",
+          "description": "Lượng protein (g)"
+        },
+        "caffeine_mg": {
+          "type": "float",
+          "description": "Lượng caffeine (mg)"
+        },
+        "price": {
+          "type": "float",
+          "description": "Giá của biến thể"
+        },
+        "sales_rank": {
+          "type": "int",
+          "description": "Xếp hạng bán hàng"
+        },
+        "vitamin_a": {
+          "type": "str",
+          "description": "Hàm lượng vitamin A"
+        },
+        "vitamin_c": {
+          "type": "str",
+          "description": "Hàm lượng vitamin C"
+        },
+        "dietary_fibre_g": {
+          "type": "float",
+          "description": "Lượng chất xơ (g)"
+        }
+      }
+    },
+    "customers": {
+      "description": "Khách hàng của cửa hàng",
+      "count": 72,
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "ID của khách hàng"
+        },
+        "name": {
+          "type": "str",
+          "description": "Tên khách hàng"
+        },
+        "age": {
+          "type": "int",
+          "description": "Tuổi của khách hàng"
+        },
+        "sex": {
+          "type": "str",
+          "description": "Giới tính của khách hàng"
+        },
+        "location": {
+          "type": "str",
+          "description": "Vị trí/địa chỉ của khách hàng"
+        },
+        "embedding": {
+          "type": "str",
+          "description": "Vector nhúng đại diện cho khách hàng"
+        },
+        "picture": {
+          "type": "str",
+          "description": "Hình ảnh của khách hàng"
+        }
+      }
+    },
+    "orders": {
+      "description": "Đơn hàng của khách hàng",
+      "count": 100,
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "ID của đơn hàng"
+        },
+        "customer_id": {
+          "type": "int",
+          "description": "ID của khách hàng đặt hàng"
+        },
+        "store_id": {
+          "type": "int",
+          "description": "ID của cửa hàng nơi đơn hàng được đặt"
+        },
+        "order_date": {
+          "type": "DateTime",
+          "description": "Ngày đặt hàng"
+        }
+      }
+    },
+    "order_detail": {
+      "description": "Chi tiết đơn hàng",
+      "count": 470,
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "ID của chi tiết đơn hàng"
+        },
+        "order_id": {
+          "type": "int",
+          "description": "ID của đơn hàng"
+        },
+        "variant_id": {
+          "type": "int",
+          "description": "ID của biến thể sản phẩm"
+        },
+        "quantity": {
+          "type": "int",
+          "description": "Số lượng"
+        },
+        "rate": {
+          "type": "float",
+          "description": "Đánh giá"
+        }
+      }
+    },
+    "store": {
+      "description": "Cửa hàng",
+      "count": 20,
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "ID của cửa hàng"
+        },
+        "name_store": {
+          "type": "str",
+          "description": "Tên cửa hàng"
+        },
+        "address": {
+          "type": "str",
+          "description": "Địa chỉ cửa hàng"
+        },
+        "phone": {
+          "type": "str",
+          "description": "Số điện thoại cửa hàng"
+        },
+        "open_close": {
+          "type": "str",
+          "description": "Giờ mở cửa và đóng cửa"
+        }
+      }
+    },
+    "ExtractedEntity": {
+      "description": "Thực thể được trích xuất từ mô tả sản phẩm",
+      "count": 298,
+      "properties": {
+        "name": {
+          "type": "str",
+          "description": "Tên thực thể"
+        },
+        "type": {
+          "type": "str",
+          "description": "Loại thực thể"
+        },
+        "extraction_id": {
+          "type": "str",
+          "description": "ID trích xuất"
+        }
+      }
+    }
+  },
+  "connections": [
+    {
+      "source": "order_detail",
+      "relationship": "ORDER_ID",
+      "target": "orders",
+      "count": 470
+    },
+    {
+      "source": "order_detail",
+      "relationship": "VARIANT_ID",
+      "target": "variant",
+      "count": 470
+    },
+    {
+      "source": "variant",
+      "relationship": "PRODUCT_ID",
+      "target": "product",
+      "count": 202
+    },
+    {
+      "source": "categories",
+      "relationship": "EXTRACTED_RELATIONSHIP",
+      "target": "ExtractedEntity",
+      "count": 181
+    },
+    {
+      "source": "product",
+      "relationship": "HAS_EXTRACTED_ENTITY",
+      "target": "ExtractedEntity",
+      "count": 161
+    },
+    {
+      "source": "categories",
+      "relationship": "HAS_EXTRACTED_ENTITY",
+      "target": "ExtractedEntity",
+      "count": 0
+    },
+    {
+      "source": "orders",
+      "relationship": "CUSTOMER_ID",
+      "target": "customers",
+      "count": 100
+    },
+    {
+      "source": "orders",
+      "relationship": "STORE_ID",
+      "target": "store",
+      "count": 100
+    },
+    {
+      "source": "product",
+      "relationship": "CATEGORIES_ID",
+      "target": "categories",
+      "count": 30
+    }
+  ],
+  "common_queries": [
+    {
+      "description": "Tìm tất cả các sản phẩm thuộc một danh mục cụ thể",
+      "query": "MATCH (p:product)-[:CATEGORIES_ID]->(c:categories) WHERE c.name_cat = 'Classic Espresso Drinks' RETURN p.name_product"
+    },
+    {
+      "description": "Tìm tất cả các biến thể của một sản phẩm cụ thể",
+      "query": "MATCH (v:variant)-[:PRODUCT_ID]->(p:product) WHERE p.name_product = 'Caramel Frappuccino' RETURN v.id, v.Beverage_Option, v.price"
+    },
+    {
+      "description": "Tìm tất cả các thực thể liên quan đến một sản phẩm cụ thể",
+      "query": "MATCH (p:product)-[:HAS_EXTRACTED_ENTITY]->(e:ExtractedEntity) WHERE p.name_product = 'Caramel Frappuccino' RETURN p.name_product, e.name, e.type"
+    },
+    {
+      "description": "Tìm các sản phẩm có đặc điểm cụ thể",
+      "query": "MATCH (p:product)-[:HAS_EXTRACTED_ENTITY]->(e:ExtractedEntity) WHERE e.type = 'Đặc điểm' AND e.name =~ '(?i).*mát lạnh.*' RETURN p.name_product, e.name"
+    },
+    {
+      "description": "Tìm các sản phẩm có nguyên liệu cụ thể",
+      "query": "MATCH (p:product)-[:HAS_EXTRACTED_ENTITY]->(e:ExtractedEntity) WHERE e.type = 'Nguyên liệu' AND e.name =~ '(?i).*sữa.*' RETURN p.name_product, e.name"
+    }
+  ],
+  "subgraphs": {
+    "product_entities": {
+      "description": "Subgraph of products and their extracted entities",
+      "pattern": "(product)-[:HAS_EXTRACTED_ENTITY]->(ExtractedEntity)"
+    }
+  },
+  "entity_types": {
+    "Nguyên liệu": 63,
+    "Ingredient": 24,
+    "Loại đồ uống": 20,
+    "Thành phần": 18,
+    "Đặc điểm": 11,
+    "Đồ dùng": 9,
+    "Màu sắc": 8,
+    "Dụng cụ phục vụ": 8,
+    "Thời gian": 6,
+    "Đối tượng sử dụng": 6,
+    "Attribute": 5,
+    "Đồ đựng": 5,
+    "Container": 5,
+    "Topping": 5,
+    "Thuộc tính": 4,
+    "Thời tiết": 4,
+    "Drink": 4,
+    "Loại cà phê": 3,
+    "Đặc điểm đồ uống": 3,
+    "Sản phẩm": 3,
+    "Thành phần (Ingredient)": 3,
+    "Dụng cụ": 3,
+    "Fruit": 3,
+    "Đặc điểm hương vị": 3,
+    "Thành phần đồ uống": 2,
+    "Flavor": 2,
+    "Product": 2,
+    "Container Type": 2,
+    "Đồ uống": 2,
+    "Thuộc tính màu sắc": 2,
+    "Hương vị": 2,
+    "Loại ly": 2,
+    "Mô tả màu sắc": 2,
+    "Đồ dùng phục vụ": 2,
+    "AgeGroup": 2,
+    "Color": 2,
+    "Serving Vessel": 2,
+    "Target Audience": 2,
+    "Drink Type": 1,
+    "Experience Type": 1,
+    "Beverage Type": 1,
+    "Hiệu ứng": 1,
+    "Vị trí": 1,
+    "Nhóm người": 1,
+    "Mục tiêu sức khỏe": 1,
+    "Shaken Iced Beverages": 1,
+    "Tea": 1,
+    "Coffee": 1,
+    "Method": 1,
+    "Refreshment": 1,
+    "Chất dinh dưỡng": 1,
+    "Lợi ích sức khỏe": 1,
+    "Đối tượng": 1,
+    "Collection": 1,
+    "Brand": 1,
+    "Tea Type": 1,
+    "Coffee Type": 1,
+    "Abstract Entity": 1,
+    "Bộ phận cốc": 1,
+    "Hình dạng": 1,
+    "Màu sắc (Color)": 1,
+    "Đồ dùng (Utensil)": 1,
+    "Hình dạng (Shape)": 1,
+    "Chất liệu (Material)": 1,
+    "Loại cà phê (Coffee Type)": 1,
+    "Bộ phận": 1,
+    "Trạng thái": 1,
+    "Bộ phận ly": 1,
+    "Cảm nhận": 1,
+    "Thời điểm": 1,
+    "Lợi ích": 1,
+    "Món ăn": 1,
+    "Thành phần trang trí": 1,
+    "Loại món ăn": 1,
+    "Time": 1,
+    "Đối tượng khách hàng": 1,
+    "Trang trí": 1,
+    "So sánh": 1,
+    "Target Customer": 1,
+    "Beverage": 1,
+    "Season": 1,
+    "Flavor Profile": 1
+  },
+  "sample_entities": {
+    "Nguyên liệu": [
+      "Hạt cà phê",
+      "Sữa tươi",
+      "Kem sữa",
+      "Espresso",
+      "Sữa tươi",
+      "Sô-cô-la",
+      "Kem tươi",
+      "Espresso",
+      "Sữa tươi",
+      "Siro vani"
+    ],
+    "Ingredient": [
+      "Espresso",
+      "Nguyên liệu cao cấp (High-quality ingredients)",
+      "Hương liệu tự nhiên",
+      "Đường",
+      "Sữa (Milk)",
+      "Cà phê (Coffee)",
+      "Bọt sữa (Milk foam)",
+      "Đá",
+      "cà phê espresso",
+      "sữa tách béo"
+    ],
+    "Loại đồ uống": [
+      "Cà phê đá xay",
+      "Phiên bản không chứa cà phê",
+      "Đồ uống mát lạnh dịu nhẹ",
+      "Frappuccino truyền thống",
+      "Frappuccino ít calo",
+      "Hỗn hợp trái cây tươi xay nhuyễn (Smoothie)",
+      "Espresso",
+      "Cà phê",
+      "Cà phê",
+      "Cà phê"
+    ],
+    "Thành phần": [
+      "Caffeine",
+      "Đường",
+      "Chất béo",
+      "Sữa",
+      "Sữa chua",
+      "Kem sữa",
+      "Lớp bọt",
+      "Bọt sữa",
+      "Caramel",
+      "Kem béo"
+    ],
+    "Đặc điểm": [
+      "Hương vị thuần khiết",
+      "Màu kem",
+      "Hương vị ngọt ngào",
+      "Hương vị béo ngậy",
+      "Sự ngọt ngào",
+      "Sự ấm áp",
+      "Màu nâu nhạt",
+      "Hương thơm cay ấm",
+      "Màu be nhạt, hơi ngả vàng",
+      "Màu xanh lá cây nhạt"
+    ],
+    "Đồ dùng": [
+      "Ly sứ",
+      "Ly thủy tinh",
+      "Ly sứ",
+      "Ly thủy tinh",
+      "Ly thủy tinh cao",
+      "Cốc thủy tinh",
+      "Ly sứ",
+      "Ly nhựa",
+      "Ly thủy tinh"
+    ],
+    "Màu sắc": [
+      "Tông nâu kem",
+      "Màu cam nhạt pha vàng",
+      "Màu nâu sẫm",
+      "Màu cam nhạt",
+      "Màu hồng nhạt",
+      "Màu đỏ cam",
+      "Màu nâu nhạt",
+      "Màu vàng nâu"
+    ],
+    "Dụng cụ phục vụ": [
+      "Ly thủy tinh nhỏ",
+      "Ly sứ cao",
+      "Ly thủy tinh",
+      "Ly nhựa",
+      "Ly thủy tinh",
+      "Ly nhựa",
+      "Ly nhựa cao",
+      "Ly nhựa cao"
+    ],
+    "Thời gian": [
+      "Ngày mới",
+      "Ngày lạnh",
+      "Buổi sáng",
+      "Buổi chiều muộn",
+      "Buổi sáng",
+      "Buổi chiều muộn"
+    ],
+    "Đối tượng sử dụng": [
+      "Người yêu thích đồ uống nhẹ nhàng, thanh khiết",
+      "Mọi lứa tuổi",
+      "Trẻ em",
+      "Người lớn",
+      "Trẻ em",
+      "Người lớn"
+    ],
+    "Attribute": [
+      "Flavor",
+      "Taste",
+      "Hương vị đa tầng phức hợp (Multi-layered complex flavors)",
+      "Trải nghiệm (Experience)",
+      "Hương vị"
+    ],
+    "Đồ đựng": [
+      "Ly",
+      "Cốc thủy tinh",
+      "Ly thủy tinh cao",
+      "Ly nhựa cao",
+      "Ly nhựa cao"
+    ],
+    "Container": [
+      "Ly sứ tròn (Round porcelain cup)",
+      "Ly nhựa trong suốt cao",
+      "ly nhựa cao trong suốt",
+      "ly nhựa cao (tall plastic cup)",
+      "Ly thủy tinh cao, hình trụ"
+    ],
+    "Topping": [
+      "kem béo ngậy",
+      "kem tươi trắng (white whipped cream)",
+      "sốt caramel mỏng (thin caramel sauce)",
+      "Lớp kem trắng béo mịn",
+      "Lớp kem tươi đánh bông"
+    ],
+    "Thuộc tính": [
+      "Hương vị",
+      "Lớp hương vị",
+      "Hương vị thơm ngon",
+      "Màu nâu sô cô la nhạt"
+    ],
+    "Thời tiết": [
+      "Ngày nóng bức",
+      "Ngày hè oi bức",
+      "Ngày hè oi ả",
+      "Ngày hè nóng bức"
+    ],
+    "Drink": [
+      "Thức uống",
+      "Ly cà phê",
+      "Mocha Frappuccino",
+      "Caramel Frappuccino"
+    ],
+    "Loại cà phê": [
+      "Cà phê đen truyền thống",
+      "Espresso",
+      "Cà phê espresso"
+    ],
+    "Đặc điểm đồ uống": [
+      "Kết cấu kem mịn",
+      "Hương vị ngọt ngào",
+      "Bọt"
+    ],
+    "Sản phẩm": [
+      "Đồ uống",
+      "Đồ uống",
+      "Thức uống"
+    ],
+    "Thành phần (Ingredient)": [
+      "Espresso",
+      "Sữa tách béo",
+      "Kem sữa mịn màng"
+    ],
+    "Dụng cụ": [
+      "Ly thủy tinh cao",
+      "Cốc thủy tinh",
+      "Ly nhựa cao"
+    ],
+    "Fruit": [
+      "Cam",
+      "Xoài",
+      "Chuối"
+    ],
+    "Đặc điểm hương vị": [
+      "Hương vị ngọt ngào",
+      "Hương vị béo ngậy",
+      "Hương vị nhẹ nhàng"
+    ],
+    "Thành phần đồ uống": [
+      "Siro",
+      "Hoa quả"
+    ],
+    "Flavor": [
+      "Hương vị tự nhiên",
+      "hương vị mocha"
+    ],
+    "Product": [
+      "Sáng tạo độc đáo (Unique creations)",
+      "Đồ uống"
+    ],
+    "Container Type": [
+      "Ly sứ",
+      "Ly thủy tinh"
+    ],
+    "Đồ uống": [
+      "Thức uống",
+      "Trà Matcha sữa tươi"
+    ],
+    "Thuộc tính màu sắc": [
+      "Màu nâu đậm",
+      "Màu nâu nhạt"
+    ],
+    "Hương vị": [
+      "Hương vị táo",
+      "Hương vị caramel"
+    ],
+    "Loại ly": [
+      "Ly nhựa",
+      "Ly thủy tinh"
+    ],
+    "Mô tả màu sắc": [
+      "Màu nâu đỏ đậm đà",
+      "Màu trắng"
+    ],
+    "Đồ dùng phục vụ": [
+      "Ly thủy tinh",
+      "Ly nhựa"
+    ],
+    "AgeGroup": [
+      "Trẻ em",
+      "Người lớn"
+    ],
+    "Color": [
+      "Màu hồng nhạt",
+      "Màu trắng kem"
+    ],
+    "Serving Vessel": [
+      "Ly nhựa cao",
+      "Ly thủy tinh trong suốt"
+    ],
+    "Target Audience": [
+      "Trẻ em",
+      "Người lớn"
+    ],
+    "Drink Type": [
+      "Espresso drinks"
+    ],
+    "Experience Type": [
+      "Experience"
+    ],
+    "Beverage Type": [
+      "Coffee"
+    ],
+    "Hiệu ứng": [
+      "Năng lượng"
+    ],
+    "Vị trí": [
+      "Bề mặt"
+    ],
+    "Nhóm người": [
+      "Người yêu thích đồ uống mát lạnh dịu nhẹ"
+    ],
+    "Mục tiêu sức khỏe": [
+      "Chế độ ăn uống lành mạnh"
+    ],
+    "Shaken Iced Beverages": [
+      "Thức uống đá lắc"
+    ],
+    "Tea": [
+      "Trà"
+    ],
+    "Coffee": [
+      "Cà phê"
+    ],
+    "Method": [
+      "Phương pháp đặc biệt"
+    ],
+    "Refreshment": [
+      "Sự sảng khoái"
+    ],
+    "Chất dinh dưỡng": [
+      "Vitamin"
+    ],
+    "Lợi ích sức khỏe": [
+      "Năng lượng"
+    ],
+    "Đối tượng": [
+      "Cơ thể"
+    ],
+    "Collection": [
+      "Bộ sưu tập trà cao cấp"
+    ],
+    "Brand": [
+      "Thương hiệu Tazo"
+    ],
+    "Tea Type": [
+      "Trà thượng hạng"
+    ],
+    "Coffee Type": [
+      "Cà phê nguyên chất"
+    ],
+    "Abstract Entity": [
+      "Tâm hồn"
+    ],
+    "Bộ phận cốc": [
+      "Quai"
+    ],
+    "Hình dạng": [
+      "Hình trụ tròn"
+    ],
+    "Màu sắc (Color)": [
+      "Màu nâu kem nhẹ nhàng"
+    ],
+    "Đồ dùng (Utensil)": [
+      "Ly"
+    ],
+    "Hình dạng (Shape)": [
+      "Hình dạng tròn"
+    ],
+    "Chất liệu (Material)": [
+      "Nhựa"
+    ],
+    "Loại cà phê (Coffee Type)": [
+      "Cà phê ít calo"
+    ],
+    "Bộ phận": [
+      "Tay cầm"
+    ],
+    "Trạng thái": [
+      "Cảm giác thư giãn"
+    ],
+    "Bộ phận ly": [
+      "Quai cầm"
+    ],
+    "Cảm nhận": [
+      "Cảm giác giải nhiệt sảng khoái"
+    ],
+    "Thời điểm": [
+      "Ngày hè oi ả"
+    ],
+    "Lợi ích": [
+      "Sự giải nhiệt"
+    ],
+    "Món ăn": [
+      "Đồ uống"
+    ],
+    "Thành phần trang trí": [
+      "Lớp phủ socola vụn"
+    ],
+    "Loại món ăn": [
+      "Món tráng miệng"
+    ],
+    "Time": [
+      "Ngày hè nóng nực"
+    ],
+    "Đối tượng khách hàng": [
+      "Giới trẻ"
+    ],
+    "Trang trí": [
+      "Kem đánh bông trắng mịn"
+    ],
+    "So sánh": [
+      "Mật ong"
+    ],
+    "Target Customer": [
+      "khách hàng trẻ tuổi, năng động (young, active customers)"
+    ],
+    "Beverage": [
+      "Món đồ uống"
+    ],
+    "Season": [
+      "Ngày hè nóng bức"
+    ],
+    "Flavor Profile": [
+      "Hương vị dịu nhẹ"
+    ]
+  },
+  "entity_relationships": {
+    "Tạo nên": 10,
+    "Kết hợp với": 9,
+    "Chứa": 6,
+    "có": 6,
+    "tạo nên": 6,
+    "Có màu": 6,
+    "Được phục vụ trong": 6,
+    "phù hợp với": 5,
+    "kết hợp": 5,
+    "phủ": 5,
+    "Được làm từ": 5,
+    "phục vụ trong": 5,
+    "Thích hợp cho": 4,
+    "Có": 4,
+    "Được pha với": 4,
+    "chứa": 4,
+    "Là": 3,
+    "Có hương vị": 3,
+    "kết hợp cùng": 3,
+    "được phục vụ trong": 3,
+    "có hương vị": 3,
+    "Phục vụ trong": 3,
+    "có màu": 3,
+    "Được xay cùng": 3,
+    "Mang đến": 2,
+    "Lý tưởng cho": 2,
+    "giảm": 2,
+    "Từ": 2,
+    "Tác động đến": 2,
+    "chứa trong": 2,
+    "Được pha từ": 2,
+    "Có hình dạng": 2,
+    "Được pha trộn với": 2,
+    "Tạo ra": 2,
+    "Phủ": 2,
+    "Mang lại": 2,
+    "hòa quyện": 2,
+    "Phù hợp với": 2,
+    "thích hợp để thưởng thức vào": 2,
+    "kết hợp với": 2,
+    "lý tưởng cho": 2,
+    "PROVIDES": 1,
+    "IS_MADE_OF": 1,
+    "HAS_FLAVOR": 1,
+    "HAS_TASTE": 1,
+    "Được pha chế từ": 1,
+    "Cung cấp": 1,
+    "Phủ trên": 1,
+    "Thích": 1,
+    "là phiên bản ít calo của": 1,
+    "Được chế biến theo": 1,
+    "thuộc về": 1,
+    "tạo ra": 1,
+    "là loại": 1,
+    "pha thêm": 1,
+    "dành cho": 1,
+    "hòa quyện với": 1,
+    "tạo thành": 1,
+    "pha_thêm": 1,
+    "là_loại": 1,
+    "đựng_trong": 1,
+    "làm_bằng": 1,
+    "Được làm bằng": 1,
+    "Hoàn hảo cho": 1,
+    "có màu sắc": 1,
+    "Có mùi": 1,
+    "được ướp lạnh với": 1,
+    "chuyển sang": 1,
+    "Được pha chế với": 1,
+    "cung cấp": 1,
+    "Có lớp phủ": 1,
+    "Được phủ": 1,
+    "Là thành phần của": 1,
+    "Nằm trên bề mặt": 1
+  },
+  "product_entities": {
+    "Mocha Frappuccino": {
+      "Thành phần": 6
+    },
+    "Tazo Chai Tea Latte": {
+      "Nguyên liệu": 5,
+      "Đặc điểm": 3
+    },
+    "Caramel Apple Spice": {
+      "Nguyên liệu": 4
+    },
+    "Caramel Light Frappuccino": {
+      "Ingredient": 4
+    },
+    "Hot Chocolate": {
+      "Nguyên liệu": 4
+    },
+    "Vanilla Bean": {
+      "Ingredient": 4
+    },
+    "Caffè Mocha": {
+      "Nguyên liệu": 3
+    },
+    "Strawberries & Crème": {
+      "Ingredient": 3
+    },
+    "White Chocolate Mocha": {
+      "Đặc điểm": 3,
+      "Nguyên liệu": 3
+    },
+    "Banana Chocolate Smoothie": {
+      "Nguyên liệu": 3
+    },
+    "Coffee Light Frappuccino": {
+      "Nguyên liệu": 3
+    },
+    "Coffee Frappuccino": {
+      "Nguyên liệu": 3
+    },
+    "Cappuccino": {
+      "Ingredient": 3
+    },
+    "Shaken Iced Tazo Tea": {
+      "Đối tượng sử dụng": 3
+    },
+    "Iced Brewed Coffee": {
+      "Loại ly": 2,
+      "Thời gian": 2
+    },
+    "Tazo Green Tea Latte": {
+      "Đồ dùng": 2
+    },
+    "Caffè Americano": {
+      "Đồ đựng": 2
+    }
+  },
+  "popular_entities": [
+    {
+      "name": "Sữa tươi",
+      "type": "Nguyên liệu",
+      "count": 8
+    },
+    {
+      "name": "Sữa",
+      "type": "Nguyên liệu",
+      "count": 5
+    },
+    {
+      "name": "Kem tươi",
+      "type": "Nguyên liệu",
+      "count": 5
+    },
+    {
+      "name": "Espresso",
+      "type": "Nguyên liệu",
+      "count": 4
+    },
+    {
+      "name": "Đá xay",
+      "type": "Nguyên liệu",
+      "count": 4
+    },
+    {
+      "name": "Đá",
+      "type": "Nguyên liệu",
+      "count": 3
+    },
+    {
+      "name": "Cà phê espresso",
+      "type": "Nguyên liệu",
+      "count": 3
+    },
+    {
+      "name": "Ly sứ",
+      "type": "Đồ dùng",
+      "count": 3
+    },
+    {
+      "name": "Ly thủy tinh",
+      "type": "Đồ dùng",
+      "count": 3
+    },
+    {
+      "name": "Cà phê",
+      "type": "Loại đồ uống",
+      "count": 3
+    },
+    {
+      "name": "Ly thủy tinh",
+      "type": "Dụng cụ phục vụ",
+      "count": 2
+    },
+    {
+      "name": "Sô cô la",
+      "type": "Nguyên liệu",
+      "count": 2
+    },
+    {
+      "name": "Buổi chiều muộn",
+      "type": "Thời gian",
+      "count": 2
+    },
+    {
+      "name": "Trà ủ lạnh",
+      "type": "Loại đồ uống",
+      "count": 2
+    },
+    {
+      "name": "Buổi sáng",
+      "type": "Thời gian",
+      "count": 2
+    },
+    {
+      "name": "Ly nhựa",
+      "type": "Dụng cụ phục vụ",
+      "count": 2
+    },
+    {
+      "name": "Đồ uống",
+      "type": "Sản phẩm",
+      "count": 2
+    },
+    {
+      "name": "Nước nóng",
+      "type": "Nguyên liệu",
+      "count": 2
+    },
+    {
+      "name": "Siro caramel",
+      "type": "Nguyên liệu",
+      "count": 2
+    },
+    {
+      "name": "Sữa",
+      "type": "Thành phần",
+      "count": 2
+    }
+  ]
+}

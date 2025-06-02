@@ -1,0 +1,1737 @@
+{
+  "nodes": {
+    "Entity": {
+      "description": "Entity node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Entity"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Entity"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Entity"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Entity"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Entity"
+        }
+      }
+    },
+    "Product": {
+      "description": "Product node",
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "id of Product"
+        },
+        "link_image": {
+          "type": "str",
+          "description": "link_image of Product"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Product"
+        },
+        "categories_id": {
+          "type": "int",
+          "description": "categories_id of Product"
+        },
+        "descriptions": {
+          "type": "str",
+          "description": "descriptions of Product"
+        }
+      }
+    },
+    "Category": {
+      "description": "Category node",
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "id of Category"
+        },
+        "name_cat": {
+          "type": "str",
+          "description": "name_cat of Category"
+        },
+        "description": {
+          "type": "str",
+          "description": "description of Category"
+        }
+      }
+    },
+    "Variant": {
+      "description": "Variant node",
+      "properties": {
+        "vitamin_a": {
+          "type": "str",
+          "description": "vitamin_a of Variant"
+        },
+        "id": {
+          "type": "int",
+          "description": "id of Variant"
+        },
+        "vitamin_c": {
+          "type": "str",
+          "description": "vitamin_c of Variant"
+        },
+        "price": {
+          "type": "float",
+          "description": "price of Variant"
+        },
+        "caffeine_mg": {
+          "type": "float",
+          "description": "caffeine_mg of Variant"
+        },
+        "product_id": {
+          "type": "int",
+          "description": "product_id of Variant"
+        },
+        "Beverage Option": {
+          "type": "str",
+          "description": "Beverage Option of Variant"
+        },
+        "calories": {
+          "type": "float",
+          "description": "calories of Variant"
+        },
+        "dietary_fibre_g": {
+          "type": "float",
+          "description": "dietary_fibre_g of Variant"
+        },
+        "sales_rank": {
+          "type": "int",
+          "description": "sales_rank of Variant"
+        },
+        "sugars_g": {
+          "type": "float",
+          "description": "sugars_g of Variant"
+        },
+        "protein_g": {
+          "type": "float",
+          "description": "protein_g of Variant"
+        }
+      }
+    },
+    "Order": {
+      "description": "Order node",
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "id of Order"
+        },
+        "store_id": {
+          "type": "int",
+          "description": "store_id of Order"
+        },
+        "order_date": {
+          "type": "DateTime",
+          "description": "order_date of Order"
+        },
+        "customer_id": {
+          "type": "int",
+          "description": "customer_id of Order"
+        }
+      }
+    },
+    "Customer": {
+      "description": "Customer node",
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "id of Customer"
+        },
+        "picture": {
+          "type": "str",
+          "description": "picture of Customer"
+        },
+        "sex": {
+          "type": "str",
+          "description": "sex of Customer"
+        },
+        "location": {
+          "type": "str",
+          "description": "location of Customer"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Customer"
+        },
+        "age": {
+          "type": "int",
+          "description": "age of Customer"
+        },
+        "embedding": {
+          "type": "str",
+          "description": "embedding of Customer"
+        }
+      }
+    },
+    "Store": {
+      "description": "Store node",
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "id of Store"
+        },
+        "phone": {
+          "type": "str",
+          "description": "phone of Store"
+        },
+        "address": {
+          "type": "str",
+          "description": "address of Store"
+        },
+        "name_store": {
+          "type": "str",
+          "description": "name_store of Store"
+        },
+        "open_close": {
+          "type": "str",
+          "description": "open_close of Store"
+        }
+      }
+    },
+    "Order_Detail": {
+      "description": "Order_Detail node",
+      "properties": {
+        "id": {
+          "type": "int",
+          "description": "id of Order_Detail"
+        },
+        "rate": {
+          "type": "float",
+          "description": "rate of Order_Detail"
+        },
+        "variant_id": {
+          "type": "int",
+          "description": "variant_id of Order_Detail"
+        },
+        "quantity": {
+          "type": "int",
+          "description": "quantity of Order_Detail"
+        },
+        "order_id": {
+          "type": "int",
+          "description": "order_id of Order_Detail"
+        }
+      }
+    },
+    "Nguyên_Liệu": {
+      "description": "Nguyên_Liệu node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Nguyên_Liệu"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Nguyên_Liệu"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Nguyên_Liệu"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Nguyên_Liệu"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Nguyên_Liệu"
+        }
+      }
+    },
+    "Đồ_Uống": {
+      "description": "Đồ_Uống node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Đồ_Uống"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Đồ_Uống"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Đồ_Uống"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Đồ_Uống"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Đồ_Uống"
+        }
+      }
+    },
+    "Thuộc_Tính": {
+      "description": "Thuộc_Tính node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Thuộc_Tính"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Thuộc_Tính"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Thuộc_Tính"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Thuộc_Tính"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Thuộc_Tính"
+        }
+      }
+    },
+    "Loại_Cà_Phê": {
+      "description": "Loại_Cà_Phê node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Loại_Cà_Phê"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Loại_Cà_Phê"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Loại_Cà_Phê"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Loại_Cà_Phê"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Loại_Cà_Phê"
+        }
+      }
+    },
+    "Đặc_Điểm": {
+      "description": "Đặc_Điểm node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Đặc_Điểm"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Đặc_Điểm"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Đặc_Điểm"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Đặc_Điểm"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Đặc_Điểm"
+        }
+      }
+    },
+    "Lợi_Ích": {
+      "description": "Lợi_Ích node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Lợi_Ích"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Lợi_Ích"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Lợi_Ích"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Lợi_Ích"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Lợi_Ích"
+        }
+      }
+    },
+    "Cà_Phê": {
+      "description": "Cà_Phê node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Cà_Phê"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Cà_Phê"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Cà_Phê"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Cà_Phê"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Cà_Phê"
+        }
+      }
+    },
+    "Hương_Vị": {
+      "description": "Hương_Vị node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Hương_Vị"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Hương_Vị"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Hương_Vị"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Hương_Vị"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Hương_Vị"
+        }
+      }
+    },
+    "Topping": {
+      "description": "Topping node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Topping"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Topping"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Topping"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Topping"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Topping"
+        }
+      }
+    },
+    "Điều_Kiện_Thời_Tiết": {
+      "description": "Điều_Kiện_Thời_Tiết node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Điều_Kiện_Thời_Tiết"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Điều_Kiện_Thời_Tiết"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Điều_Kiện_Thời_Tiết"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Điều_Kiện_Thời_Tiết"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Điều_Kiện_Thời_Tiết"
+        }
+      }
+    },
+    "Sản_Phẩm": {
+      "description": "Sản_Phẩm node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Sản_Phẩm"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Sản_Phẩm"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Sản_Phẩm"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Sản_Phẩm"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Sản_Phẩm"
+        }
+      }
+    },
+    "Kết_Cấu": {
+      "description": "Kết_Cấu node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Kết_Cấu"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Kết_Cấu"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Kết_Cấu"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Kết_Cấu"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Kết_Cấu"
+        }
+      }
+    },
+    "Component": {
+      "description": "Component node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Component"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Component"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Component"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Component"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Component"
+        }
+      }
+    },
+    "Diet": {
+      "description": "Diet node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Diet"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Diet"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Diet"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Diet"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Diet"
+        }
+      }
+    },
+    "Trà": {
+      "description": "Trà node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Trà"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Trà"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Trà"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Trà"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Trà"
+        }
+      }
+    },
+    "Phương_Pháp": {
+      "description": "Phương_Pháp node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Phương_Pháp"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Phương_Pháp"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Phương_Pháp"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Phương_Pháp"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Phương_Pháp"
+        }
+      }
+    },
+    "Refreshment": {
+      "description": "Refreshment node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Refreshment"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Refreshment"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Refreshment"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Refreshment"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Refreshment"
+        }
+      }
+    },
+    "Sinh_Tố": {
+      "description": "Sinh_Tố node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Sinh_Tố"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Sinh_Tố"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Sinh_Tố"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Sinh_Tố"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Sinh_Tố"
+        }
+      }
+    },
+    "Nutrient": {
+      "description": "Nutrient node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Nutrient"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Nutrient"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Nutrient"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Nutrient"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Nutrient"
+        }
+      }
+    },
+    "Body": {
+      "description": "Body node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Body"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Body"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Body"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Body"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Body"
+        }
+      }
+    },
+    "Collection": {
+      "description": "Collection node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Collection"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Collection"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Collection"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Collection"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Collection"
+        }
+      }
+    },
+    "Brand": {
+      "description": "Brand node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Brand"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Brand"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Brand"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Brand"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Brand"
+        }
+      }
+    },
+    "Loại": {
+      "description": "Loại node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Loại"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Loại"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Loại"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Loại"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Loại"
+        }
+      }
+    },
+    "Dụng_Cụ": {
+      "description": "Dụng_Cụ node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Dụng_Cụ"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Dụng_Cụ"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Dụng_Cụ"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Dụng_Cụ"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Dụng_Cụ"
+        }
+      }
+    },
+    "Thời_Gian": {
+      "description": "Thời_Gian node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Thời_Gian"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Thời_Gian"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Thời_Gian"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Thời_Gian"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Thời_Gian"
+        }
+      }
+    },
+    "Màu_Sắc": {
+      "description": "Màu_Sắc node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Màu_Sắc"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Màu_Sắc"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Màu_Sắc"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Màu_Sắc"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Màu_Sắc"
+        }
+      }
+    },
+    "Mục_Đích": {
+      "description": "Mục_Đích node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Mục_Đích"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Mục_Đích"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Mục_Đích"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Mục_Đích"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Mục_Đích"
+        }
+      }
+    },
+    "Bộ_Phận": {
+      "description": "Bộ_Phận node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Bộ_Phận"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Bộ_Phận"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Bộ_Phận"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Bộ_Phận"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Bộ_Phận"
+        }
+      }
+    },
+    "Vessel": {
+      "description": "Vessel node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Vessel"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Vessel"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Vessel"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Vessel"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Vessel"
+        }
+      }
+    },
+    "Vật_Liệu": {
+      "description": "Vật_Liệu node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Vật_Liệu"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Vật_Liệu"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Vật_Liệu"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Vật_Liệu"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Vật_Liệu"
+        }
+      }
+    },
+    "Vật_Chứa": {
+      "description": "Vật_Chứa node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Vật_Chứa"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Vật_Chứa"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Vật_Chứa"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Vật_Chứa"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Vật_Chứa"
+        }
+      }
+    },
+    "Thời_Điểm": {
+      "description": "Thời_Điểm node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Thời_Điểm"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Thời_Điểm"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Thời_Điểm"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Thời_Điểm"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Thời_Điểm"
+        }
+      }
+    },
+    "Khách_Hàng_Mục_Tiêu": {
+      "description": "Khách_Hàng_Mục_Tiêu node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Khách_Hàng_Mục_Tiêu"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Khách_Hàng_Mục_Tiêu"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Khách_Hàng_Mục_Tiêu"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Khách_Hàng_Mục_Tiêu"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Khách_Hàng_Mục_Tiêu"
+        }
+      }
+    },
+    "Loại_Trà": {
+      "description": "Loại_Trà node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Loại_Trà"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Loại_Trà"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Loại_Trà"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Loại_Trà"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Loại_Trà"
+        }
+      }
+    },
+    "Thương_Hiệu_Trà": {
+      "description": "Thương_Hiệu_Trà node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Thương_Hiệu_Trà"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Thương_Hiệu_Trà"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Thương_Hiệu_Trà"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Thương_Hiệu_Trà"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Thương_Hiệu_Trà"
+        }
+      }
+    },
+    "Thời_Gianthời_Tiết": {
+      "description": "Thời_Gianthời_Tiết node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Thời_Gianthời_Tiết"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Thời_Gianthời_Tiết"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Thời_Gianthời_Tiết"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Thời_Gianthời_Tiết"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Thời_Gianthời_Tiết"
+        }
+      }
+    },
+    "Buổi_Chiều": {
+      "description": "Buổi_Chiều node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Buổi_Chiều"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Buổi_Chiều"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Buổi_Chiều"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Buổi_Chiều"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Buổi_Chiều"
+        }
+      }
+    },
+    "Nhóm_Tuổi": {
+      "description": "Nhóm_Tuổi node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Nhóm_Tuổi"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Nhóm_Tuổi"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Nhóm_Tuổi"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Nhóm_Tuổi"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Nhóm_Tuổi"
+        }
+      }
+    },
+    "Thời_Tiết": {
+      "description": "Thời_Tiết node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Thời_Tiết"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Thời_Tiết"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Thời_Tiết"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Thời_Tiết"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Thời_Tiết"
+        }
+      }
+    },
+    "Món_Ăn": {
+      "description": "Món_Ăn node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Món_Ăn"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Món_Ăn"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Món_Ăn"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Món_Ăn"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Món_Ăn"
+        }
+      }
+    },
+    "Trái_Cây": {
+      "description": "Trái_Cây node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Trái_Cây"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Trái_Cây"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Trái_Cây"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Trái_Cây"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Trái_Cây"
+        }
+      }
+    },
+    "Season": {
+      "description": "Season node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Season"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Season"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Season"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Season"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Season"
+        }
+      }
+    },
+    "Target_Audience": {
+      "description": "Target_Audience node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Target_Audience"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Target_Audience"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Target_Audience"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Target_Audience"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Target_Audience"
+        }
+      }
+    },
+    "Dish": {
+      "description": "Dish node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Dish"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Dish"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Dish"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Dish"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Dish"
+        }
+      }
+    },
+    "Trang_Trí": {
+      "description": "Trang_Trí node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Trang_Trí"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Trang_Trí"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Trang_Trí"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Trang_Trí"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Trang_Trí"
+        }
+      }
+    },
+    "Loại_Người": {
+      "description": "Loại_Người node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Loại_Người"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Loại_Người"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Loại_Người"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Loại_Người"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Loại_Người"
+        }
+      }
+    },
+    "Customer_Group": {
+      "description": "Customer_Group node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Customer_Group"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Customer_Group"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Customer_Group"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Customer_Group"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Customer_Group"
+        }
+      }
+    },
+    "Description": {
+      "description": "Description node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Description"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Description"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Description"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Description"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Description"
+        }
+      }
+    },
+    "Person": {
+      "description": "Person node",
+      "properties": {
+        "id": {
+          "type": "str",
+          "description": "id of Person"
+        },
+        "original_type": {
+          "type": "str",
+          "description": "original_type of Person"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of Person"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of Person"
+        },
+        "original_name": {
+          "type": "str",
+          "description": "original_name of Person"
+        }
+      }
+    },
+    "ProductCommunity": {
+      "description": "ProductCommunity node",
+      "properties": {
+        "variant_relationships": {
+          "type": "str",
+          "description": "variant_relationships of ProductCommunity"
+        },
+        "marketing_suggestions": {
+          "type": "str",
+          "description": "marketing_suggestions of ProductCommunity"
+        },
+        "keywords": {
+          "type": "list",
+          "description": "keywords of ProductCommunity"
+        },
+        "community_name": {
+          "type": "str",
+          "description": "community_name of ProductCommunity"
+        },
+        "structured_description": {
+          "type": "str",
+          "description": "structured_description of ProductCommunity"
+        },
+        "llm_description": {
+          "type": "str",
+          "description": "llm_description of ProductCommunity"
+        },
+        "faq": {
+          "type": "str",
+          "description": "faq of ProductCommunity"
+        },
+        "resolution": {
+          "type": "float",
+          "description": "resolution of ProductCommunity"
+        },
+        "target_customers": {
+          "type": "str",
+          "description": "target_customers of ProductCommunity"
+        },
+        "differences": {
+          "type": "str",
+          "description": "differences of ProductCommunity"
+        },
+        "size": {
+          "type": "int",
+          "description": "size of ProductCommunity"
+        },
+        "id": {
+          "type": "int",
+          "description": "id of ProductCommunity"
+        },
+        "num_communities": {
+          "type": "int",
+          "description": "num_communities of ProductCommunity"
+        },
+        "weights": {
+          "type": "str",
+          "description": "weights of ProductCommunity"
+        },
+        "modularity": {
+          "type": "float",
+          "description": "modularity of ProductCommunity"
+        },
+        "description": {
+          "type": "str",
+          "description": "description of ProductCommunity"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of ProductCommunity"
+        },
+        "common_features": {
+          "type": "str",
+          "description": "common_features of ProductCommunity"
+        },
+        "embedding": {
+          "type": "str",
+          "description": "embedding of ProductCommunity"
+        }
+      }
+    },
+    "VariantCommunity": {
+      "description": "VariantCommunity node",
+      "properties": {
+        "marketing_suggestions": {
+          "type": "str",
+          "description": "marketing_suggestions of VariantCommunity"
+        },
+        "keywords": {
+          "type": "list",
+          "description": "keywords of VariantCommunity"
+        },
+        "community_name": {
+          "type": "str",
+          "description": "community_name of VariantCommunity"
+        },
+        "structured_description": {
+          "type": "str",
+          "description": "structured_description of VariantCommunity"
+        },
+        "llm_description": {
+          "type": "str",
+          "description": "llm_description of VariantCommunity"
+        },
+        "product_community_id": {
+          "type": "int",
+          "description": "product_community_id of VariantCommunity"
+        },
+        "resolution": {
+          "type": "float",
+          "description": "resolution of VariantCommunity"
+        },
+        "target_customers": {
+          "type": "str",
+          "description": "target_customers of VariantCommunity"
+        },
+        "differences": {
+          "type": "str",
+          "description": "differences of VariantCommunity"
+        },
+        "size": {
+          "type": "int",
+          "description": "size of VariantCommunity"
+        },
+        "id": {
+          "type": "str",
+          "description": "id of VariantCommunity"
+        },
+        "modularity": {
+          "type": "float",
+          "description": "modularity of VariantCommunity"
+        },
+        "description": {
+          "type": "str",
+          "description": "description of VariantCommunity"
+        },
+        "name": {
+          "type": "str",
+          "description": "name of VariantCommunity"
+        },
+        "common_features": {
+          "type": "str",
+          "description": "common_features of VariantCommunity"
+        },
+        "embedding": {
+          "type": "str",
+          "description": "embedding of VariantCommunity"
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "type": "CUSTOMER_ID",
+      "source": "Order",
+      "target": "Customer",
+      "properties": {}
+    },
+    {
+      "type": "STORE_ID",
+      "source": "Order",
+      "target": "Store",
+      "properties": {}
+    },
+    {
+      "type": "ORDER_ID",
+      "source": "Order_Detail",
+      "target": "Order",
+      "properties": {}
+    },
+    {
+      "type": "VARIANT_ID",
+      "source": "Order_Detail",
+      "target": "Variant",
+      "properties": {}
+    },
+    {
+      "type": "PRODUCT_ID",
+      "source": "Variant",
+      "target": "Product",
+      "properties": {}
+    },
+    {
+      "type": "HAS_EXTRACTED_ENTITY",
+      "source": "Product",
+      "target": "Entity",
+      "properties": {}
+    },
+    {
+      "type": "EXTRACTED_RELATIONSHIP",
+      "source": "Entity",
+      "target": "Entity",
+      "properties": {
+        "original_type": {
+          "type": "str",
+          "description": "original_type of EXTRACTED_RELATIONSHIP"
+        },
+        "type": {
+          "type": "str",
+          "description": "type of EXTRACTED_RELATIONSHIP"
+        }
+      }
+    },
+    {
+      "type": "CONTAINS_PRODUCT",
+      "source": "ProductCommunity",
+      "target": "Product",
+      "properties": {}
+    },
+    {
+      "type": "CONTAINS_VARIANT",
+      "source": "VariantCommunity",
+      "target": "Variant",
+      "properties": {}
+    },
+    {
+      "type": "BELONGS_TO_PRODUCT_COMMUNITY",
+      "source": "VariantCommunity",
+      "target": "ProductCommunity",
+      "properties": {}
+    },
+    {
+      "type": "BELONGS_TO_CATEGORY",
+      "source": "Product",
+      "target": "Category",
+      "properties": {}
+    }
+  ],
+  "connections": [
+    {
+      "source": "Order",
+      "relationship": "CUSTOMER_ID",
+      "target": "Customer"
+    },
+    {
+      "source": "Order",
+      "relationship": "STORE_ID",
+      "target": "Store"
+    },
+    {
+      "source": "Order_Detail",
+      "relationship": "ORDER_ID",
+      "target": "Order"
+    },
+    {
+      "source": "Order_Detail",
+      "relationship": "VARIANT_ID",
+      "target": "Variant"
+    },
+    {
+      "source": "Variant",
+      "relationship": "PRODUCT_ID",
+      "target": "Product"
+    },
+    {
+      "source": "Product",
+      "relationship": "HAS_EXTRACTED_ENTITY",
+      "target": "Entity"
+    },
+    {
+      "source": "Entity",
+      "relationship": "EXTRACTED_RELATIONSHIP",
+      "target": "Entity"
+    },
+    {
+      "source": "ProductCommunity",
+      "relationship": "CONTAINS_PRODUCT",
+      "target": "Product"
+    },
+    {
+      "source": "VariantCommunity",
+      "relationship": "CONTAINS_VARIANT",
+      "target": "Variant"
+    },
+    {
+      "source": "VariantCommunity",
+      "relationship": "BELONGS_TO_PRODUCT_COMMUNITY",
+      "target": "ProductCommunity"
+    },
+    {
+      "source": "Product",
+      "relationship": "BELONGS_TO_CATEGORY",
+      "target": "Category"
+    }
+  ]
+}

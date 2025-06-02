@@ -1,0 +1,216 @@
+{
+  "basic_schema": {
+    "nodes": {
+      "order_detail": {
+        "count": 470,
+        "properties": [
+          "id",
+          "order_id",
+          "quantity",
+          "rate",
+          "variant_id"
+        ]
+      },
+      "ExtractedEntity": {
+        "count": 298,
+        "properties": [
+          "name",
+          "extraction_id",
+          "type"
+        ]
+      },
+      "variant": {
+        "count": 202,
+        "properties": [
+          "id",
+          "Beverage_Option",
+          "caffeine_mg",
+          "calories",
+          "dietary_fibre_g",
+          "price",
+          "product_id",
+          "protein_g",
+          "sales_rank",
+          "sugars_g",
+          "vitamin_a",
+          "vitamin_c"
+        ]
+      },
+      "orders": {
+        "count": 100,
+        "properties": [
+          "id",
+          "customer_id",
+          "order_date",
+          "store_id"
+        ]
+      },
+      "customers": {
+        "count": 72,
+        "properties": [
+          "id",
+          "age",
+          "embedding",
+          "location",
+          "name",
+          "sex"
+        ]
+      },
+      "product": {
+        "count": 30,
+        "properties": [
+          "id",
+          "categories_id",
+          "descriptions",
+          "link_image",
+          "name_product"
+        ]
+      },
+      "store": {
+        "count": 20,
+        "properties": [
+          "id",
+          "address",
+          "name_store",
+          "open_close",
+          "phone"
+        ]
+      },
+      "categories": {
+        "count": 9,
+        "properties": [
+          "id",
+          "description",
+          "name_cat"
+        ]
+      }
+    },
+    "relationships": {
+      "ORDER_ID": {
+        "count": 470,
+        "properties": []
+      },
+      "VARIANT_ID": {
+        "count": 470,
+        "properties": []
+      },
+      "EXTRACTED_RELATIONSHIP": {
+        "count": 269,
+        "properties": [
+          "type"
+        ]
+      },
+      "HAS_EXTRACTED_ENTITY": {
+        "count": 210,
+        "properties": []
+      },
+      "PRODUCT_ID": {
+        "count": 202,
+        "properties": []
+      },
+      "CUSTOMER_ID": {
+        "count": 100,
+        "properties": []
+      },
+      "STORE_ID": {
+        "count": 100,
+        "properties": []
+      },
+      "CATEGORIES_ID": {
+        "count": 30,
+        "properties": []
+      }
+    }
+  },
+  "entity_types": {
+    "Nguyên liệu": 63,
+    "Ingredient": 24,
+    "Loại đồ uống": 20,
+    "Thành phần": 18,
+    "Đặc điểm": 11,
+    "Đồ dùng": 9,
+    "Màu sắc": 8,
+    "Dụng cụ phục vụ": 8,
+    "Thời gian": 6,
+    "Đối tượng sử dụng": 6,
+    "Attribute": 5,
+    "Đồ đựng": 5,
+    "Container": 5,
+    "Topping": 5,
+    "Thuộc tính": 4,
+    "Thời tiết": 4,
+    "Drink": 4,
+    "Loại cà phê": 3,
+    "Đặc điểm đồ uống": 3,
+    "Sản phẩm": 3,
+    "Thành phần (Ingredient)": 3,
+    "Dụng cụ": 3,
+    "Fruit": 3,
+    "Đặc điểm hương vị": 3,
+    "Thành phần đồ uống": 2,
+    "Flavor": 2,
+    "Product": 2,
+    "Container Type": 2,
+    "Đồ uống": 2,
+    "Thuộc tính màu sắc": 2,
+    "Hương vị": 2,
+    "Loại ly": 2,
+    "Mô tả màu sắc": 2,
+    "Đồ dùng phục vụ": 2,
+    "AgeGroup": 2,
+    "Color": 2,
+    "Serving Vessel": 2,
+    "Target Audience": 2,
+    "Drink Type": 1,
+    "Experience Type": 1,
+    "Beverage Type": 1,
+    "Hiệu ứng": 1
+  },
+  "sample_entities": {
+    "Drink Type": [
+      "Espresso drinks"
+    ],
+    "Experience Type": [
+      "Experience"
+    ],
+    "Beverage Type": [
+      "Coffee"
+    ],
+    "Attribute": [
+      "Flavor",
+      "Taste",
+      "Hương vị đa tầng phức hợp (Multi-layered complex flavors)",
+      "Trải nghiệm (Experience)",
+      "Hương vị"
+    ],
+    "Loại cà phê": [
+      "Cà phê đen truyền thống",
+      "Espresso",
+      "Cà phê espresso"
+    ],
+    "Nguyên liệu": [
+      "Hạt cà phê",
+      "Sữa tươi",
+      "Kem sữa",
+      "Espresso",
+      "Sữa tươi",
+      "Sô-cô-la",
+      "Kem tươi",
+      "Espresso",
+      "Sữa tươi",
+      "Siro vani"
+    ],
+    "Đặc điểm": [
+      "Hương vị thuần khiết",
+      "Màu kem",
+      "Hương vị ngọt ngào",
+      "Hương vị béo ngậy",
+      "Sự ngọt ngào",
+      "Sự ấm áp",
+      "Màu nâu nhạt",
+      "Hương thơm cay ấm",
+      "Màu be nhạt, hơi ngả vàng",
+      "Màu xanh lá cây nhạt"
+    ]
+  }
+}
